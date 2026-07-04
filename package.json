@@ -1,0 +1,10 @@
+{
+  "name": "salary-thief-workspace",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --prefix on-the-clock",
+    "dev:host": "npm run dev --prefix on-the-clock -- --host",
+    "build": "npm run build --prefix on-the-clock",
+    "preview": "npm run preview --prefix on-the-clock"
+  }
+}
