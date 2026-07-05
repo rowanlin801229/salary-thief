@@ -22,10 +22,10 @@ export function BossKeyMarkerBg({ isActive }: BossKeyMarkerBgProps) {
       svg.setAttribute('viewBox', `0 0 ${width} ${height}`)
       const rc = rough.svg(svg)
 
-      const fill = isActive ? '#b91c1c' : '#e63946'
-      const fillAccent = isActive ? '#991b1b' : '#d62839'
-      const stroke = isActive ? '#7f1d1d' : '#b91c1c'
-      const edgeStroke = isActive ? '#991b1b' : '#c1121f'
+      const fill = isActive ? '#000000' : '#000000'
+      const fillAccent = isActive ? '#000000' : '#000000'
+      const stroke = isActive ? '#FFFFFF' : '#FFFFFF'
+      const edgeStroke = isActive ? '#FFFFFF' : '#FFFFFF'
       const top = height * 0.1
       const w = width
       const h = height
@@ -91,7 +91,7 @@ export function BossKeyMarkerBg({ isActive }: BossKeyMarkerBgProps) {
 
       svg.append(
         rc.line(w * 0.12, top + 22, w * 0.88, top + 18, {
-          stroke: isActive ? '#7f1d1d' : '#c1121f',
+          stroke: isActive ? '#FFFFFF' : '#FFFFFF',
           strokeWidth: 1.5,
           roughness: 3.6,
           bowing: 1.8,

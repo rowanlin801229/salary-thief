@@ -35,7 +35,7 @@ export function StopwatchDial({
           cy={DIAL_CENTER}
           r={RING_RADIUS}
           className="stopwatch-dial-bg"
-          fill={isActive ? '#fffef8' : '#fff'}
+          fill="#FFFFFF"
         />
         <circle
           cx={DIAL_CENTER}

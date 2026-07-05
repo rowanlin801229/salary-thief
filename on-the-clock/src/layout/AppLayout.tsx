@@ -1,4 +1,5 @@
 import { Outlet } from 'react-router-dom'
+import { BackButton } from '../components/BackButton'
 import { BossKeyButton } from '../components/BossKeyButton'
 import { FakeInboxOverlay } from '../components/FakeInboxOverlay'
 import { Header } from '../components/Header'
@@ -10,6 +11,7 @@ export function AppLayout() {
   return (
     <div className="app-shell">
       <Header />
+      <BackButton />
       <main className="app-main">
         <Outlet />
       </main>

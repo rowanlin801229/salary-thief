@@ -113,7 +113,7 @@ export function CurrencySelectorButton({ value, onChange, disabled }: CurrencySe
       <RoughFrame
         className={`rough-control rough-button-frame currency-selector-button-frame${isOpen ? ' is-open' : ''}`}
         contentClassName="rough-control-content currency-selector-button-content"
-        stroke="#111"
+        stroke="#000000"
         fill="transparent"
         cornerRadius={16}
       >

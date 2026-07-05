@@ -8,7 +8,7 @@ export function RoughInput({ className, ...inputProps }: RoughInputProps) {
     <RoughFrame
       className="rough-control rough-input-frame"
       contentClassName="rough-control-content"
-      stroke="#111"
+      stroke="#000000"
       fill="transparent"
       cornerRadius={0}
     >

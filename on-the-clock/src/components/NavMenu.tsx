@@ -81,8 +81,8 @@ export function NavMenu() {
       {open && (
         <RoughFrame
           className="nav-menu-panel"
-          stroke="#111"
-          fill="#fff"
+        stroke="#000000"
+        fill="#FFFFFF"
           contentClassName="nav-menu-panel-content"
         >
           <ul className="nav-menu-list" role="menu">

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { DoodleMarks } from '../components/DoodleMarks'
 import { RoughBox } from '../components/RoughBox'
 import { RoughButton } from '../components/RoughButton'
 import { StopwatchDial } from '../components/StopwatchDial'
@@ -11,24 +12,34 @@ import { formatCurrency, getPerMinuteRate, isScheduleComplete } from '../lib/sal
 import { loadTodaySessions, saveLastSession, saveTodaySessions } from '../lib/storage'
 import { formatMinutesSeconds } from '../lib/time'
 
+function createSessionId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
+}
+
 export function TimerPage() {
   const { t, language } = useLanguage()
   const { symbol } = useCurrency()
   const { salaryConfig, timerStartAt, stopTimer, setLastSession } = useAppState()
   const [now, setNow] = useState(() => Date.now())
   const [accumulatedMs, setAccumulatedMs] = useState(0)
-  const [activeSince, setActiveSince] = useState<number | null>(() => timerStartAt)
-  const [sessionStartAt, setSessionStartAt] = useState<number | null>(() => timerStartAt)
+  const [activeSince, setActiveSince] = useState<number | null>(null)
+  const [sessionStartAt, setSessionStartAt] = useState<number | null>(null)
   const navigate = useNavigate()
 
   const canStart = salaryConfig.amount > 0 && isScheduleComplete(salaryConfig)
   const isRunning = activeSince !== null
 
+  // Consume global auto-start once (from Setup / Result), then clear so pause works.
   useEffect(() => {
-    if (!timerStartAt || activeSince !== null) return
+    if (timerStartAt === null) return
     setSessionStartAt(timerStartAt)
     setActiveSince(timerStartAt)
-  }, [timerStartAt, activeSince])
+    setAccumulatedMs(0)
+    stopTimer()
+  }, [timerStartAt, stopTimer])
 
   useEffect(() => {
     if (!isRunning) return
@@ -73,7 +84,7 @@ export function TimerPage() {
     const finalStolenAmount = (finalElapsedMs / 60000) * perMinuteRate
     const startAt = sessionStartAt ?? endAt - finalElapsedMs
     const session = {
-      id: crypto.randomUUID(),
+      id: createSessionId(),
       startAt,
       endAt,
       elapsedMs: finalElapsedMs,
@@ -90,6 +101,7 @@ export function TimerPage() {
 
   return (
     <RoughBox className="page-card timer-page">
+      <DoodleMarks />
       <div className="timer-form">
         <section className="timer-group timer-group-control">
           <StopwatchDial
@@ -127,7 +139,7 @@ export function TimerPage() {
             className="timer-end-button"
             frameClassName="timer-end-button-frame"
             onClick={handleStop}
-            disabled={elapsedMs <= 0}
+            disabled={!canStart || elapsedMs <= 0}
           >
             {t('endSlacking')}
           </RoughButton>

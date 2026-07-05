@@ -1,15 +1,18 @@
+import { createPortal } from 'react-dom'
+import { useBossKey } from '../context/BossKeyContext'
 import { useLanguage } from '../context/LanguageContext'
 import { getFakeEmails } from '../lib/fakeInbox'
 
 export function FakeInboxOverlay() {
-  const { language } = useLanguage()
+  const { language, t } = useLanguage()
+  const { deactivate } = useBossKey()
   const items = getFakeEmails(language)
   const folders =
     language === 'zh'
       ? ['收件匣', '寄件備份', '草稿', '已刪除項目']
       : ['Inbox', 'Sent Items', 'Drafts', 'Deleted Items']
 
-  return (
+  return createPortal(
     <div className="boss-inbox" role="presentation">
       <header className="boss-inbox-topbar">
         <div className="boss-inbox-brand">
@@ -31,9 +34,14 @@ export function FakeInboxOverlay() {
 
       <div className="boss-inbox-body">
         <aside className="boss-inbox-sidebar">
-          <button type="button" className="boss-inbox-compose">
-            {language === 'zh' ? '新增郵件' : 'New mail'}
-          </button>
+          <div className="boss-inbox-compose-row">
+            <button type="button" className="boss-inbox-compose boss-inbox-compose--decoy">
+              {language === 'zh' ? '新增郵件' : 'New mail'}
+            </button>
+            <button type="button" className="boss-inbox-compose" onClick={deactivate}>
+              {t('bossAllClear')}
+            </button>
+          </div>
           <ul className="boss-inbox-folders">
             {folders.map((folder, index) => (
               <li key={folder}>
@@ -67,6 +75,7 @@ export function FakeInboxOverlay() {
           </ul>
         </main>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

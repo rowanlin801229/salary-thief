@@ -21,7 +21,7 @@ export function RoughButton({
       className={`rough-control rough-button-frame ${active ? 'is-active' : ''} ${primary ? 'is-primary' : ''} ${frameClassName ?? ''}`}
       contentClassName="rough-control-content"
       fill="transparent"
-      stroke="#111"
+      stroke="#000000"
       cornerRadius={16}
     >
       <button {...buttonProps} className={`rough-button-native ${className ?? ''}`}>

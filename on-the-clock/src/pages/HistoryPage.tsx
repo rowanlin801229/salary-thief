@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { DoodleMarks } from '../components/DoodleMarks'
 import { RoughBox } from '../components/RoughBox'
 import { RoughButton } from '../components/RoughButton'
 import { useAppState } from '../context/AppStateContext'
@@ -48,50 +49,59 @@ export function HistoryPage() {
 
   return (
     <RoughBox className="page-card history-page">
-      <div className="result-total-plain history-total-plain">
-        <p className="result-total-label">{t('todayCumulative')}</p>
-        <p className="result-total-amount">{formatCurrency(symbol, total)}</p>
-      </div>
+      <DoodleMarks />
+      <div className="history-form">
+        <section className="history-group history-group-total">
+          <div className="result-total-plain">
+            <p className="result-total-label">{t('todayCumulative')}</p>
+            <p className="result-total-amount">{formatCurrency(symbol, total)}</p>
+          </div>
+        </section>
 
-      {sessions.length === 0 ? (
-        <p className="history-empty">{t('noRecordsToday')}</p>
-      ) : (
-        <ul className="result-records-list history-records-list">
-          {sessions.map((record, index) => (
-            <li key={record.id} className="result-record-item">
-              <span className="result-record-index">
-                {language === 'zh'
-                  ? `${t('recordEntry')}${sessions.length - index}次`
-                  : `${t('recordEntry')} ${index + 1}`}
-              </span>
-              <span className="result-record-time">{formatMinutesSeconds(record.elapsedMs)}</span>
-              <span className="result-record-amount">
-                {formatCurrency(symbol, record.stolenAmount)}
-              </span>
-            </li>
-          ))}
-        </ul>
-      )}
+        <section className="history-group history-group-records">
+          {sessions.length === 0 ? (
+            <p className="history-empty">{t('noRecordsToday')}</p>
+          ) : (
+            <ul className="result-today-records history-records-list">
+              {sessions.map((record, index) => (
+                <li key={record.id} className="result-record-item">
+                  <span className="result-record-index">
+                    {language === 'zh'
+                      ? `${t('recordEntry')}${sessions.length - index}次`
+                      : `${t('recordEntry')} ${index + 1}`}
+                  </span>
+                  <span className="result-record-time">{formatMinutesSeconds(record.elapsedMs)}</span>
+                  <span className="result-record-amount">
+                    {formatCurrency(symbol, record.stolenAmount)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
 
-      <div className={`history-actions${sessions.length === 0 ? ' history-actions-single' : ''}`}>
-        <RoughButton
-          type="button"
-          className="result-secondary-button"
-          frameClassName="history-action-frame"
-          onClick={() => navigate(-1)}
+        <section
+          className={`history-group history-group-actions${sessions.length === 0 ? ' history-group-actions-single' : ''}`}
         >
-          {t('prevStep')}
-        </RoughButton>
-        {sessions.length > 0 && (
           <RoughButton
             type="button"
-            className="result-clear-button"
+            className="result-secondary-button"
             frameClassName="history-action-frame"
-            onClick={handleClearRecords}
+            onClick={() => navigate(-1)}
           >
-            {t('clearRecords')}
+            {t('back')}
           </RoughButton>
-        )}
+          {sessions.length > 0 && (
+            <RoughButton
+              type="button"
+              className="result-clear-button"
+              frameClassName="history-action-frame"
+              onClick={handleClearRecords}
+            >
+              {t('clearRecords')}
+            </RoughButton>
+          )}
+        </section>
       </div>
     </RoughBox>
   )

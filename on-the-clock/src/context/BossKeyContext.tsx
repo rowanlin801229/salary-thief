@@ -19,10 +19,12 @@ export function BossKeyProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!isActive) {
       document.title = t('appTitle')
+      document.body.style.overflow = ''
       return
     }
 
     document.title = 'Inbox - Mail'
+    document.body.style.overflow = 'hidden'
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -31,7 +33,10 @@ export function BossKeyProvider({ children }: { children: ReactNode }) {
     }
 
     window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = ''
+      window.removeEventListener('keydown', handleKeyDown)
+    }
   }, [isActive, t])
 
   const value = useMemo(

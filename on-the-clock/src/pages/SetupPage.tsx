@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CurrencySelectorButton } from '../components/CurrencySelectorButton'
+import { DoodleMarks } from '../components/DoodleMarks'
 import { RoughBox } from '../components/RoughBox'
 import { RoughButton } from '../components/RoughButton'
 import { RoughInput } from '../components/RoughInput'
@@ -47,6 +48,7 @@ export function SetupPage() {
 
   return (
     <RoughBox className="page-card setup-doodle-card">
+      <DoodleMarks />
       <p className="result-big-title">{t('setupTitle')}</p>
       <p className="setup-intro">{t('setupIntro')}</p>
 

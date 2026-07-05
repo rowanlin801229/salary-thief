@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { DoodleMarks } from '../components/DoodleMarks'
 import { RoughBox } from '../components/RoughBox'
 import { RoughButton } from '../components/RoughButton'
 import { useAppState } from '../context/AppStateContext'
@@ -12,6 +13,7 @@ import { formatMinutesSeconds } from '../lib/time'
 function ResultShell({ children }: { children: ReactNode }) {
   return (
     <RoughBox className="page-card result-doodle-card">
+      <DoodleMarks />
       {children}
     </RoughBox>
   )
@@ -20,8 +22,9 @@ function ResultShell({ children }: { children: ReactNode }) {
 export function ResultPage() {
   const { t, language } = useLanguage()
   const { symbol } = useCurrency()
-  const { lastSession, setLastSession, startTimer } = useAppState()
+  const { lastSession, startTimer, setLastSession } = useAppState()
   const navigate = useNavigate()
+  const [activeTab, setActiveTab] = useState<'session' | 'today'>('session')
   const [copied, setCopied] = useState(false)
   const [todayRecords, setTodayRecords] = useState(() => loadTodaySessions())
 
@@ -39,6 +42,8 @@ export function ResultPage() {
     [todayRecords]
   )
 
+  const previewRecords = useMemo(() => todayRecords.slice(0, 3), [todayRecords])
+
   useEffect(() => {
     if (!copied) return
     const timerId = window.setTimeout(() => setCopied(false), 2000)
@@ -49,15 +54,6 @@ export function ResultPage() {
     language === 'zh'
       ? `我今天摸魚 ${formatCurrency(symbol, totalAmount)}！`
       : `I slacked off for ${formatCurrency(symbol, totalAmount)} today!`
-
-  const handleClearRecords = () => {
-    if (todayRecords.length === 0) return
-    if (!window.confirm(t('clearRecordsConfirm'))) return
-
-    clearTodaySessions()
-    setTodayRecords([])
-    setLastSession(null)
-  }
 
   const handleShare = async () => {
     try {
@@ -76,6 +72,15 @@ export function ResultPage() {
     }
   }
 
+  const handleClearRecords = () => {
+    if (todayRecords.length === 0) return
+    if (!window.confirm(t('clearRecordsConfirm'))) return
+
+    clearTodaySessions()
+    setLastSession(null)
+    setTodayRecords([])
+  }
+
   if (!session) {
     return (
       <ResultShell>
@@ -92,9 +97,9 @@ export function ResultPage() {
                 className="result-continue-button"
                 frameClassName="result-continue-button-frame"
                 onClick={() => {
-                startTimer()
-                navigate('/timer')
-              }}
+                  startTimer()
+                  navigate('/timer')
+                }}
               >
                 {t('goTimer')}
               </RoughButton>
@@ -120,82 +125,134 @@ export function ResultPage() {
           <p className="result-big-title">{t('resultTitle')}</p>
         </section>
 
-        <section className="result-group result-group-session" aria-labelledby="result-session-heading">
-          <p className="result-group-title" id="result-session-heading">
-            {language === 'zh' ? '本次戰績' : 'this round'}
-          </p>
-          <div className="result-stat result-stat-hero">
-            <p className="result-stat-label">{t('sessionAmount')}</p>
-            <p className="result-stat-value result-stat-money">
-              {formatCurrency(symbol, session.stolenAmount)}
-            </p>
-          </div>
-          <div className="result-stat result-stat-secondary">
-            <p className="result-stat-label">{t('sessionTime')}</p>
-            <p className="result-stat-value result-stat-time">{formatMinutesSeconds(session.elapsedMs)}</p>
-          </div>
-        </section>
+        <div className="result-tab-bar">
+          <button
+            type="button"
+            className={`result-tab ${activeTab === 'session' ? 'is-active' : ''}`}
+            onClick={() => setActiveTab('session')}
+          >
+            {language === 'zh' ? '本次戰績' : 'This Round'}
+          </button>
+          <button
+            type="button"
+            className={`result-tab ${activeTab === 'today' ? 'is-active' : ''}`}
+            onClick={() => setActiveTab('today')}
+          >
+            {language === 'zh' ? '今日戰績' : 'Today'}
+          </button>
+        </div>
 
-        <section className="result-group result-group-today">
-          <div className="result-total-plain">
-            <p className="result-total-label">{t('todayCumulative')}</p>
-            <p className="result-total-amount">{formatCurrency(symbol, totalAmount)}</p>
-          </div>
-          {todayRecords.length > 0 ? (
-            <>
-              <ul className="result-today-records">
-                {todayRecords.map((record, index) => (
-                  <li key={record.id} className="result-record-item">
-                    <span className="result-record-index">
-                      {language === 'zh'
-                        ? `${t('recordEntry')}${todayRecords.length - index}次`
-                        : `${t('recordEntry')} ${index + 1}`}
-                    </span>
-                    <span className="result-record-time">{formatMinutesSeconds(record.elapsedMs)}</span>
-                    <span className="result-record-amount">
-                      {formatCurrency(symbol, record.stolenAmount)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+        {activeTab === 'session' && (
+          <div className="result-tab-content result-tab-session">
+            <section className="result-group result-group-session">
+              <p className="result-group-title">
+                {language === 'zh' ? '金額 & 時間' : 'Amount & Time'}
+              </p>
+              <div className="result-stat result-stat-hero">
+                <p className="result-stat-label">{t('sessionAmount')}</p>
+                <p className="result-stat-value result-stat-money">
+                  {formatCurrency(symbol, session.stolenAmount)}
+                </p>
+              </div>
+              <div className="result-stat result-stat-secondary">
+                <p className="result-stat-label">{t('sessionTime')}</p>
+                <p className="result-stat-value result-stat-time">
+                  {formatMinutesSeconds(session.elapsedMs)}
+                </p>
+              </div>
+            </section>
+
+            <section className="result-group result-group-action">
+              <div className="result-actions-row">
+                <RoughButton
+                  type="button"
+                  primary
+                  className="result-continue-button"
+                  frameClassName="result-continue-button-frame"
+                  onClick={() => {
+                    startTimer()
+                    navigate('/timer')
+                  }}
+                >
+                  {t('continueSlacking')}
+                </RoughButton>
+                <RoughButton
+                  type="button"
+                  className="result-share-button"
+                  frameClassName="result-share-button-frame"
+                  onClick={handleShare}
+                >
+                  {copied ? t('copied') : t('share')}
+                </RoughButton>
+              </div>
+            </section>
+
+            <section className="result-group result-group-reconfigure">
               <RoughButton
                 type="button"
-                className="result-clear-button"
-                frameClassName="result-clear-button-frame"
-                onClick={handleClearRecords}
+                className="result-reconfigure-button"
+                frameClassName="result-reconfigure-button-frame"
+                onClick={() => navigate('/setup')}
               >
-                {t('clearRecords')}
+                {t('reconfigureSalary')}
               </RoughButton>
-            </>
-          ) : (
-            <p className="result-today-records-empty">{t('noRecordsToday')}</p>
-          )}
-        </section>
-
-        <section className="result-group result-group-action">
-          <div className="result-actions-row">
-            <RoughButton
-              type="button"
-              primary
-              className="result-continue-button"
-              frameClassName="result-continue-button-frame"
-              onClick={() => {
-                startTimer()
-                navigate('/timer')
-              }}
-            >
-              {t('continueSlacking')}
-            </RoughButton>
-            <RoughButton
-              type="button"
-              className="result-share-button"
-              frameClassName="result-share-button-frame"
-              onClick={handleShare}
-            >
-              {copied ? t('copied') : t('share')}
-            </RoughButton>
+            </section>
           </div>
-        </section>
+        )}
+
+        {activeTab === 'today' && (
+          <div className="result-tab-content result-tab-today">
+            <section className="result-group result-group-today">
+              <div className="result-total-plain">
+                <p className="result-total-label">{t('todayCumulative')}</p>
+                <p className="result-total-amount">{formatCurrency(symbol, totalAmount)}</p>
+              </div>
+
+              {todayRecords.length > 0 ? (
+                <>
+                  <ul className="result-today-records">
+                    {previewRecords.map((record, index) => (
+                      <li key={record.id} className="result-record-item">
+                        <span className="result-record-index">
+                          {language === 'zh'
+                            ? `${t('recordEntry')}${todayRecords.length - index}次`
+                            : `${t('recordEntry')} ${index + 1}`}
+                        </span>
+                        <span className="result-record-time">
+                          {formatMinutesSeconds(record.elapsedMs)}
+                        </span>
+                        <span className="result-record-amount">
+                          {formatCurrency(symbol, record.stolenAmount)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  <RoughButton
+                    type="button"
+                    className="result-view-more-button"
+                    frameClassName="result-view-more-button-frame"
+                    onClick={() => navigate('/history')}
+                  >
+                    {t('viewMore')}
+                  </RoughButton>
+                </>
+              ) : (
+                <p className="result-today-records-empty">{t('noRecordsToday')}</p>
+              )}
+
+              {todayRecords.length > 0 && (
+                <RoughButton
+                  type="button"
+                  className="result-clear-button"
+                  frameClassName="result-clear-button-frame"
+                  onClick={handleClearRecords}
+                >
+                  {t('clearRecords')}
+                </RoughButton>
+              )}
+            </section>
+          </div>
+        )}
       </div>
     </ResultShell>
   )

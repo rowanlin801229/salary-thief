@@ -36,6 +36,7 @@ type LabelKey =
   | 'sessionAmount'
   | 'todayCumulative'
   | 'viewRecords'
+  | 'viewMore'
   | 'continueSlacking'
   | 'copied'
   | 'todayRecords'
@@ -51,6 +52,7 @@ type LabelKey =
   | 'clearRecordsConfirm'
   | 'bossAlert'
   | 'bossAllClear'
+  | 'reconfigureSalary'
   | 'setupIntro'
   | 'setupTitle'
   | 'setupStep1'
@@ -67,7 +69,7 @@ type LabelKey =
   | 'pauseTimerAria'
   | 'selectCurrency'
 
-export const labelColors: string[] = ['#e63946', '#457b9d', '#e63946', '#e63946', '#457b9d']
+export const labelColors: string[] = ['#000000', '#000000', '#000000', '#000000', '#000000']
 
 export const translations: Record<Language, Record<LabelKey, string>> = {
   en: {
@@ -106,7 +108,8 @@ export const translations: Record<Language, Record<LabelKey, string>> = {
     sessionAmount: 'Amount',
     todayCumulative: "Today's Score",
     viewRecords: "Today's Records",
-    continueSlacking: 'Keep Slacking',
+    viewMore: 'View all',
+    continueSlacking: 'Keep Going',
     copied: 'Copied!',
     todayRecords: "Today's Records",
     noRecordsToday: 'No records yet today',
@@ -120,7 +123,8 @@ export const translations: Record<Language, Record<LabelKey, string>> = {
     clearRecords: 'Clear All',
     clearRecordsConfirm: 'Clear all records for today?',
     bossAlert: 'Boss alert',
-    bossAllClear: 'All clear',
+    bossAllClear: 'Back to Work',
+    reconfigureSalary: 'Reconfigure Salary',
     setupTitle: "Let's price your slacking!",
     setupIntro: 'Enter your salary, hit Start slacking, and see how much you "earned" while slacking.',
     setupStep1: 'Enter your salary below (work hours are optional)',
@@ -173,6 +177,7 @@ export const translations: Record<Language, Record<LabelKey, string>> = {
     sessionAmount: '金額',
     todayCumulative: '今天戰績',
     viewRecords: '查看今日紀錄',
+    viewMore: '查看更多',
     continueSlacking: '繼續摸魚',
     copied: '已複製！',
     todayRecords: '今日摸魚紀錄',
@@ -188,6 +193,7 @@ export const translations: Record<Language, Record<LabelKey, string>> = {
     clearRecordsConfirm: '確定要清空今天的所有摸魚紀錄嗎？',
     bossAlert: '老闆來了',
     bossAllClear: '老闆走了',
+    reconfigureSalary: '重新設定薪資',
     setupTitle: '先算算摸魚價值！',
     setupIntro: '輸入薪資、按開始摸魚，看看偷了多少薪水。',
     setupStep1: '在下方輸入薪資（工時預設可不改）',
