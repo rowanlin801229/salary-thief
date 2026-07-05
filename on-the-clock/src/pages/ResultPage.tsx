@@ -88,6 +88,10 @@ export function ResultPage() {
           <section className="result-group result-group-hero">
             <p className="result-big-title">{t('resultTitle')}</p>
           </section>
+          <div className="page-cat-wrap page-cat-wrap-result">
+            <img className="page-cat" src="/cats/result-cat.png" alt="" aria-hidden />
+            <span className="page-cat-bubble page-cat-bubble-result">{t('resultCatQuote')}</span>
+          </div>
           <section className="result-group result-group-empty">
             <p className="result-empty-text">{t('noSessionYet')}</p>
             <div className="result-empty-actions result-actions-row">
@@ -122,8 +126,14 @@ export function ResultPage() {
     <ResultShell>
       <div className="result-form">
         <section className="result-group result-group-hero">
+          <span className="page-burst result-title-burst" aria-hidden>{t('resultBurst')}</span>
           <p className="result-big-title">{t('resultTitle')}</p>
         </section>
+
+        <div className="page-cat-wrap page-cat-wrap-result">
+          <img className="page-cat" src="/cats/result-cat.png" alt="" aria-hidden />
+          <span className="page-cat-bubble page-cat-bubble-result">{t('resultCatQuote')}</span>
+        </div>
 
         <div className="result-tab-bar">
           <button

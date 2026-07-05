@@ -1,4 +1,5 @@
 import { useLanguage } from '../context/LanguageContext'
+import { ClockLogo } from './ClockLogo'
 import { NavMenu } from './NavMenu'
 import { RoughButton } from './RoughButton'
 
@@ -8,7 +9,9 @@ export function Header() {
   return (
     <header className="app-header">
       <div className="app-header-brand">
-        <div className="app-logo-placeholder" aria-hidden />
+        <span className="app-logo" aria-hidden>
+          <ClockLogo className="app-logo-clock" />
+        </span>
         <h1>{t('appTitle')}</h1>
       </div>
       <div className="app-header-actions">

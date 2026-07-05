@@ -103,6 +103,10 @@ export function TimerPage() {
     <RoughBox className="page-card timer-page">
       <DoodleMarks />
       <div className="timer-form">
+        <div className="page-cat-wrap page-cat-wrap-timer">
+          <img className="page-cat" src="/cats/timer-cat.png" alt="" aria-hidden />
+          <span className="page-cat-bubble page-cat-bubble-timer">{t('timerCatQuote')}</span>
+        </div>
         <section className="timer-group timer-group-control">
           <StopwatchDial
             elapsedMs={elapsedMs}
@@ -126,7 +130,10 @@ export function TimerPage() {
         </section>
 
         <section className="timer-group timer-group-stats">
-          <div className="result-stat result-stat-hero">
+          <div className="result-stat result-stat-hero timer-stat-hero">
+            {isRunning && stolenAmount > 0 && (
+              <span className="page-burst timer-money-burst" aria-hidden>{t('timerMoneyBurst')}</span>
+            )}
             <p className="result-stat-label">{t('stolenAmount')}</p>
             <p className="result-stat-value timer-stat-money">{formatCurrency(symbol, stolenAmount)}</p>
           </div>

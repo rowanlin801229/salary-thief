@@ -51,6 +51,13 @@ export function HistoryPage() {
     <RoughBox className="page-card history-page">
       <DoodleMarks />
       <div className="history-form">
+        <section className="history-group history-group-hero">
+          <p className="result-big-title history-big-title">{t('historyTitle')}</p>
+          <div className="page-cat-wrap page-cat-wrap-history">
+            <img className="page-cat" src="/cats/history-cat.png" alt="" aria-hidden />
+            <span className="page-cat-bubble page-cat-bubble-history">{t('historyCatQuote')}</span>
+          </div>
+        </section>
         <section className="history-group history-group-total">
           <div className="result-total-plain">
             <p className="result-total-label">{t('todayCumulative')}</p>

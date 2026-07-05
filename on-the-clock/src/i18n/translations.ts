@@ -68,6 +68,17 @@ type LabelKey =
   | 'startTimerAria'
   | 'pauseTimerAria'
   | 'selectCurrency'
+  | 'setupHeroTitle'
+  | 'setupCatQuote'
+  | 'setupStartBurst'
+  | 'setupInputArrow'
+  | 'setupStepsTitle'
+  | 'timerCatQuote'
+  | 'timerMoneyBurst'
+  | 'resultCatQuote'
+  | 'resultBurst'
+  | 'historyTitle'
+  | 'historyCatQuote'
 
 export const labelColors: string[] = ['#000000', '#000000', '#000000', '#000000', '#000000']
 
@@ -139,7 +150,18 @@ export const translations: Record<Language, Record<LabelKey, string>> = {
     timerPaused: 'paused',
     startTimerAria: 'Start timer',
     pauseTimerAria: 'Pause timer',
-    selectCurrency: 'Select currency'
+    selectCurrency: 'Select currency',
+    setupHeroTitle: 'STEAL THE CLOCK',
+    setupCatQuote: 'work again...? meh.',
+    setupStartBurst: 'GO!!',
+    setupInputArrow: 'type it here',
+    setupStepsTitle: 'THE PLAN',
+    timerCatQuote: 'stealing time... shhh',
+    timerMoneyBurst: 'cha-ching!',
+    resultCatQuote: 'we won today.',
+    resultBurst: 'NICE!!',
+    historyTitle: 'THE LOOT',
+    historyCatQuote: 'counting again... ugh'
   },
   zh: {
     appTitle: '薪水小偷',
@@ -208,6 +230,17 @@ export const translations: Record<Language, Record<LabelKey, string>> = {
     timerPaused: '已暫停',
     startTimerAria: '開始計時',
     pauseTimerAria: '暫停計時',
-    selectCurrency: '選擇幣別'
+    selectCurrency: '選擇幣別',
+    setupHeroTitle: '偷走你的薪水',
+    setupCatQuote: '又要上班喔…隨便啦',
+    setupStartBurst: '衝啊！！',
+    setupInputArrow: '填這裡啦',
+    setupStepsTitle: '摸魚攻略',
+    timerCatQuote: '偷時間中…噓',
+    timerMoneyBurst: '入袋啦！',
+    resultCatQuote: '今天贏麻了',
+    resultBurst: '讚啦！！',
+    historyTitle: '戰利品清單',
+    historyCatQuote: '又在對帳…累'
   }
 }

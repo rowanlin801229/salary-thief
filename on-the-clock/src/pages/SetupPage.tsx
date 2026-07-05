@@ -49,15 +49,25 @@ export function SetupPage() {
   return (
     <RoughBox className="page-card setup-doodle-card">
       <DoodleMarks />
-      <p className="result-big-title">{t('setupTitle')}</p>
-      <p className="setup-intro">{t('setupIntro')}</p>
 
-      <ol className="setup-howto">
-        <li>{t('setupStep1')}</li>
-        <li>{t('setupStep2')}</li>
-        <li>{t('setupStep3')}</li>
-        <li>{t('setupStep4')}</li>
-      </ol>
+      <div className="setup-hero">
+        <h1 className="setup-hero-title">{t('setupHeroTitle')}</h1>
+        <div className="setup-hero-cat-wrap">
+          <img className="setup-hero-cat" src="/cats/hero-cat.png" alt="" aria-hidden />
+          <span className="setup-cat-bubble">{t('setupCatQuote')}</span>
+        </div>
+        <p className="setup-intro">{t('setupIntro')}</p>
+      </div>
+
+      <div className="setup-steps">
+        <p className="setup-steps-title">{t('setupStepsTitle')}</p>
+        <ol className="setup-howto">
+          <li>{t('setupStep1')}</li>
+          <li>{t('setupStep2')}</li>
+          <li>{t('setupStep3')}</li>
+          <li>{t('setupStep4')}</li>
+        </ol>
+      </div>
 
       <div className="setup-form">
         <section className="setup-group" aria-labelledby="setup-salary-heading">
@@ -90,6 +100,10 @@ export function SetupPage() {
                 </RoughButton>
               </div>
               <div className="setup-field-input-group">
+                <span className="setup-input-arrow" aria-hidden>
+                  <span className="setup-input-arrow-text">{t('setupInputArrow')}</span>
+                  <span className="setup-input-arrow-mark">↙</span>
+                </span>
                 <RoughInput
                   id="salary-amount"
                   type="number"
@@ -210,16 +224,19 @@ export function SetupPage() {
         </section>
 
         <section className="setup-group setup-group-action">
-          <RoughButton
-            type="button"
-            primary
-            className="start-button"
-            frameClassName="start-button-frame"
-            onClick={handleStart}
-            disabled={!canStart}
-          >
-            {t('startTimer')}
-          </RoughButton>
+          <div className="start-button-wrap">
+            {canStart && <span className="start-burst" aria-hidden>{t('setupStartBurst')}</span>}
+            <RoughButton
+              type="button"
+              primary
+              className="start-button"
+              frameClassName="start-button-frame"
+              onClick={handleStart}
+              disabled={!canStart}
+            >
+              {t('startTimer')}
+            </RoughButton>
+          </div>
           {startHint && (
             <p className="setup-start-hint">{startHint}</p>
           )}
