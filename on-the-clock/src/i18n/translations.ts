@@ -79,6 +79,18 @@ type LabelKey =
   | 'resultBurst'
   | 'historyTitle'
   | 'historyCatQuote'
+  | 'tabTodayRecords'
+  | 'tabAllTimeRecords'
+  | 'achievement'
+  | 'achievementTitle'
+  | 'tabMonthAchievement'
+  | 'tabAllTimeAchievement'
+  | 'bestSingleMonth'
+  | 'monthTotal'
+  | 'bestSingleAllTime'
+  | 'allTimeTotal'
+  | 'noData'
+  | 'viewDetailRecords'
 
 export const labelColors: string[] = ['#000000', '#000000', '#000000', '#000000', '#000000']
 
@@ -160,8 +172,20 @@ export const translations: Record<Language, Record<LabelKey, string>> = {
     timerMoneyBurst: 'cha-ching!',
     resultCatQuote: 'we won today.',
     resultBurst: 'NICE!!',
-    historyTitle: 'THE LOOT',
-    historyCatQuote: 'counting again... ugh'
+    historyTitle: 'My Records',
+    historyCatQuote: 'counting again... ugh',
+    tabTodayRecords: 'Today',
+    tabAllTimeRecords: 'All Time Records',
+    achievement: 'Achievements',
+    achievementTitle: 'My Achievements',
+    tabMonthAchievement: 'This Month',
+    tabAllTimeAchievement: 'All Time',
+    bestSingleMonth: 'Best Single',
+    monthTotal: 'Month Total',
+    bestSingleAllTime: 'All-Time Best',
+    allTimeTotal: 'Lifetime Total',
+    noData: 'No data yet',
+    viewDetailRecords: 'View Records'
   },
   zh: {
     appTitle: '薪水小偷',
@@ -240,7 +264,19 @@ export const translations: Record<Language, Record<LabelKey, string>> = {
     timerMoneyBurst: '入袋啦！',
     resultCatQuote: '今天贏麻了',
     resultBurst: '讚啦！！',
-    historyTitle: '戰利品清單',
-    historyCatQuote: '又在對帳…累'
+    historyTitle: '我的紀錄',
+    historyCatQuote: '又在對帳…累',
+    tabTodayRecords: '本日紀錄',
+    tabAllTimeRecords: '全時間紀錄',
+    achievement: '戰績',
+    achievementTitle: '我的戰績',
+    tabMonthAchievement: '本月戰績',
+    tabAllTimeAchievement: '累計戰績',
+    bestSingleMonth: '最佳單次',
+    monthTotal: '本月累計',
+    bestSingleAllTime: '全時間最高',
+    allTimeTotal: '累計總金額',
+    noData: '暫無數據',
+    viewDetailRecords: '查看詳細紀錄'
   }
 }

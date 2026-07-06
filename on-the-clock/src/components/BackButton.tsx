@@ -33,6 +33,8 @@ export function BackButton() {
       navigate('/timer')
     } else if (location.pathname === '/history') {
       navigate('/result')
+    } else if (location.pathname === '/achievement') {
+      navigate('/result')
     }
   }
 

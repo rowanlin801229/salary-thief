@@ -10,7 +10,7 @@ interface BossKeyContextValue {
 const BossKeyContext = createContext<BossKeyContextValue | null>(null)
 
 export function BossKeyProvider({ children }: { children: ReactNode }) {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const [isActive, setIsActive] = useState(false)
 
   const deactivate = useCallback(() => setIsActive(false), [])
@@ -23,7 +23,7 @@ export function BossKeyProvider({ children }: { children: ReactNode }) {
       return
     }
 
-    document.title = 'Inbox - Mail'
+    document.title = language === 'zh' ? '收件匣 - Outlook' : 'Inbox - Outlook'
     document.body.style.overflow = 'hidden'
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -37,7 +37,7 @@ export function BossKeyProvider({ children }: { children: ReactNode }) {
       document.body.style.overflow = ''
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [isActive, t])
+  }, [isActive, t, language])
 
   const value = useMemo(
     () => ({

@@ -5,10 +5,10 @@ import { RoughButton } from './RoughButton'
 import { RoughFrame } from './RoughFrame'
 
 const navItems = [
-  { to: '/setup', labelKey: 'setup' },
   { to: '/timer', labelKey: 'timer' },
   { to: '/result', labelKey: 'result' },
-  { to: '/history', labelKey: 'history' }
+  { to: '/history', labelKey: 'history' },
+  { to: '/achievement', labelKey: 'achievement' }
 ] as const
 
 function MenuIcon({ open }: { open: boolean }) {

@@ -1085,6 +1085,225 @@ button {
   transform: rotate(-2deg);
 }
 
+.milestones-title {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(34px, 11vw, 56px);
+  font-weight: 700;
+  transform: rotate(-2deg);
+}
+
+.milestones-stats-group {
+  width: 100%;
+  max-width: 320px;
+  align-self: center;
+  gap: var(--space-section);
+}
+
+.milestones-stat-card {
+  width: 100%;
+}
+
+.milestones-stat-date {
+  margin: 6px 0 0;
+  font-family: 'Courier Prime', monospace;
+  font-size: var(--type-body);
+  color: var(--fg);
+  text-align: center;
+}
+
+.milestones-tab-content {
+  width: 100%;
+}
+
+.milestones-actions {
+  width: 100%;
+  max-width: 320px;
+  align-self: center;
+}
+
+.milestones-actions-group {
+  margin-top: 8px;
+}
+
+.milestones-action-frame {
+  width: 100%;
+}
+
+/* Phase 2a wireframe pages */
+.history-wireframe-page .result-tab-bar {
+  align-self: center;
+}
+
+.history-wireframe-page .result-tab-content {
+  margin-top: 16px;
+}
+
+.achievement-wireframe-page .result-tab-bar,
+.achievement-wireframe-page .result-tab-content {
+  align-self: center;
+}
+
+.history-month-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.history-month-group {
+  width: 100%;
+}
+
+.history-month-heading {
+  margin: 0 0 8px;
+  font-family: 'Courier Prime', monospace;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.wireframe-page {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.wireframe-title {
+  margin: 0;
+  font-family: 'Courier Prime', monospace;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.wireframe-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.wireframe-tab {
+  flex: 1;
+  padding: 8px 12px;
+  border: 2px solid #000;
+  background: #fff;
+  font-family: 'Courier Prime', monospace;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.wireframe-tab.is-active {
+  background: #000;
+  color: #fff;
+}
+
+.wireframe-subtabs {
+  display: flex;
+  gap: 8px;
+}
+
+.wireframe-subtab {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #000;
+  background: #fff;
+  font-family: 'Courier Prime', monospace;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.wireframe-subtab.is-active {
+  background: #000;
+  color: #fff;
+}
+
+.wireframe-record-item-today {
+  grid-template-columns: 1fr auto auto;
+}
+
+.wireframe-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wireframe-empty {
+  margin: 0;
+  font-family: 'Courier Prime', monospace;
+  text-align: center;
+  padding: 24px 0;
+}
+
+.wireframe-record-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.wireframe-record-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #ccc;
+  font-family: 'Courier Prime', monospace;
+  font-size: 14px;
+}
+
+.wireframe-record-index {
+  font-weight: 700;
+}
+
+.wireframe-record-amount {
+  font-weight: 700;
+}
+
+.wireframe-stat {
+  padding: 12px;
+  border: 2px solid #000;
+}
+
+.wireframe-stat-label {
+  margin: 0 0 8px;
+  font-family: 'Courier Prime', monospace;
+  font-size: 14px;
+}
+
+.wireframe-stat-value {
+  margin: 0;
+  font-family: 'Courier Prime', monospace;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.wireframe-stat-date {
+  margin: 6px 0 0;
+  font-family: 'Courier Prime', monospace;
+  font-size: 14px;
+}
+
+.wireframe-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.wireframe-button {
+  flex: 1;
+  min-width: 120px;
+  padding: 10px 16px;
+  border: 2px solid #000;
+  background: #fff;
+  font-family: 'Courier Prime', monospace;
+  font-size: 14px;
+  cursor: pointer;
+}
+
 .timer-doodle-card {
   overflow: hidden;
 }
@@ -1891,296 +2110,570 @@ button {
   z-index: 250;
   display: flex;
   flex-direction: column;
-  background: var(--bg);
-  color: var(--fg);
-  font-family: 'Courier Prime', monospace;
   overflow: hidden;
-  border: 3px solid var(--fg);
+  font-family: 'Segoe UI', 'Segoe UI Web (West European)', -apple-system, BlinkMacSystemFont,
+    'Helvetica Neue', sans-serif;
+  font-size: 14px;
+  color: #242424;
+  background: #ffffff;
+  -webkit-font-smoothing: antialiased;
 }
 
-.boss-inbox-topbar {
+.outlook-shell {
+  --outlook-blue: #0f6cbd;
+  --outlook-blue-hover: #115ea3;
+  --outlook-blue-light: #ebf3fc;
+  --outlook-border: #e1dfdd;
+  --outlook-border-strong: #d1d1d1;
+  --outlook-text: #242424;
+  --outlook-text-secondary: #616161;
+  --outlook-text-muted: #8a8886;
+  --outlook-bg: #ffffff;
+  --outlook-sidebar: #f5f5f5;
+  --outlook-row-hover: #f5f5f5;
+  --outlook-row-unread: #faf9f8;
+}
+
+.outlook-header {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 14px;
-  padding-top: max(10px, env(safe-area-inset-top));
-  background: var(--fg);
-  color: var(--bg);
-  border-bottom: 2px solid var(--fg);
+  min-height: 48px;
+  padding: 0 16px;
+  padding-top: env(safe-area-inset-top);
+  background: var(--outlook-blue);
+  color: #ffffff;
   flex-shrink: 0;
 }
 
-.boss-inbox-brand {
+.outlook-waffle {
+  display: grid;
+  grid-template-columns: repeat(3, 4px);
+  gap: 2px;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: default;
+  opacity: 0.95;
+}
+
+.outlook-waffle span {
+  display: block;
+  width: 4px;
+  height: 4px;
+  border-radius: 1px;
+  background: #ffffff;
+}
+
+.outlook-header-brand {
   display: flex;
   align-items: center;
   gap: 8px;
-  min-width: 88px;
+  min-width: 0;
 }
 
-.boss-inbox-logo {
+.outlook-logo {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.outlook-header-title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.outlook-header-search {
+  flex: 1;
+  max-width: 480px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid transparent;
+}
+
+.outlook-header-search svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+.outlook-header-search input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+}
+
+.outlook-header-search input::placeholder {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.outlook-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.outlook-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  cursor: default;
+}
+
+.outlook-icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.outlook-header .outlook-icon-btn {
+  color: #ffffff;
+}
+
+.outlook-profile-avatar {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 28px;
   height: 28px;
-  border-radius: 0;
-  border: 2px solid var(--bg);
-  background: var(--bg);
-  color: var(--fg);
-  font-weight: 700;
-  font-size: 16px;
+  margin-left: 4px;
+  border-radius: 50%;
+  background: #c7e0f4;
+  color: #004578;
+  font-size: 12px;
+  font-weight: 600;
 }
 
-.boss-inbox-app-name {
-  font-family: 'Caveat', cursive;
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.boss-inbox-search {
-  flex: 1;
-}
-
-.boss-inbox-search input {
-  width: 100%;
-  border: 2px solid var(--bg);
-  border-radius: 0;
-  padding: 8px 12px;
-  font-size: 14px;
-  color: var(--fg);
-  background: var(--bg);
-  font-family: 'Courier Prime', monospace;
-}
-
-.boss-inbox-body {
-  flex: 1;
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  min-height: 0;
-}
-
-.boss-inbox-sidebar {
-  background: var(--bg);
-  border-right: 2px solid var(--fg);
-  padding: 12px 8px;
-}
-
-.boss-inbox-compose-row {
+.outlook-command-bar {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 12px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  padding: 0 16px;
+  background: #faf9f8;
+  border-bottom: 1px solid var(--outlook-border);
+  flex-shrink: 0;
 }
 
-.boss-inbox-compose {
-  width: 100%;
-  min-width: 0;
-  border: 2px solid var(--fg);
-  border-radius: 0;
-  background: var(--bg);
-  color: var(--fg);
-  font-family: 'Caveat', cursive;
-  font-size: 16px;
-  font-weight: 700;
-  padding: 10px 12px;
-  cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.outlook-ribbon-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  min-height: 44px;
 }
 
-.boss-inbox-compose:hover {
-  border-width: 3px;
-}
-
-.boss-inbox-compose--decoy {
+.outlook-ribbon-tabs button {
+  padding: 10px 14px 8px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--outlook-text-secondary);
+  font-family: inherit;
+  font-size: 14px;
   cursor: default;
 }
 
-.boss-inbox-compose--decoy:hover {
-  border-width: 2px;
+.outlook-ribbon-tabs button.is-active {
+  color: var(--outlook-blue);
+  font-weight: 600;
+  border-bottom-color: var(--outlook-blue);
+  background: #ffffff;
 }
 
-.boss-inbox-folders {
+.outlook-command-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.outlook-btn-primary {
+  min-height: 32px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: var(--outlook-blue);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: default;
+}
+
+.outlook-btn-decoy:hover {
+  background: var(--outlook-blue-hover);
+}
+
+.outlook-command-divider {
+  width: 1px;
+  height: 24px;
+  margin: 0 4px;
+  background: var(--outlook-border);
+}
+
+.outlook-icon-btn--ribbon {
+  color: var(--outlook-text-secondary);
+}
+
+.outlook-btn-boss-clear {
+  min-height: 32px;
+  margin-left: 8px;
+  padding: 0 12px;
+  border: 1px solid var(--outlook-border-strong);
+  border-radius: 4px;
+  background: #ffffff;
+  color: var(--outlook-text);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+}
+
+.outlook-btn-boss-clear:hover {
+  background: #f3f2f1;
+  border-color: #c8c6c4;
+}
+
+.outlook-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 0;
+  background: var(--outlook-bg);
+}
+
+.outlook-folders {
+  background: var(--outlook-sidebar);
+  border-right: 1px solid var(--outlook-border);
+  padding: 8px 0;
+  overflow-y: auto;
+}
+
+.outlook-folder-list {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.boss-inbox-folders button {
+.outlook-folder-item {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  border: 2px solid transparent;
-  border-radius: 0;
+  gap: 10px;
+  min-height: 36px;
+  padding: 0 16px;
+  border: none;
   background: transparent;
-  color: var(--fg);
+  color: var(--outlook-text);
+  font-family: inherit;
   font-size: 14px;
   text-align: left;
-  padding: 8px 10px;
   cursor: default;
 }
 
-.boss-inbox-folders button.is-active {
-  background: var(--fg);
-  color: var(--bg);
-  font-weight: 700;
-  border-color: var(--fg);
+.outlook-folder-item.is-active {
+  background: var(--outlook-blue-light);
+  color: var(--outlook-blue);
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--outlook-blue);
 }
 
-.boss-inbox-count {
+.outlook-folder-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.outlook-folder-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.outlook-folder-count {
   font-size: 12px;
-  color: var(--fg);
+  font-weight: 600;
+  color: var(--outlook-text-secondary);
 }
 
-.boss-inbox-main {
+.outlook-folder-item.is-active .outlook-folder-count {
+  color: var(--outlook-blue);
+}
+
+.outlook-mail-pane {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  background: var(--bg);
+  min-height: 0;
+  background: var(--outlook-bg);
 }
 
-.boss-inbox-toolbar {
+.outlook-list-toolbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  border-bottom: 2px solid var(--fg);
-  font-family: 'Caveat', cursive;
-  font-size: 18px;
-  font-weight: 700;
+  gap: 12px;
+  flex-wrap: wrap;
+  min-height: 44px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--outlook-border);
+  background: #ffffff;
 }
 
-.boss-inbox-toolbar-meta {
+.outlook-inbox-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.outlook-inbox-tabs button {
+  min-height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--outlook-border);
+  border-radius: 16px;
+  background: #ffffff;
+  color: var(--outlook-text-secondary);
+  font-family: inherit;
   font-size: 13px;
-  font-weight: 400;
-  font-family: 'Courier Prime', monospace;
-  color: var(--fg);
+  cursor: default;
 }
 
-.boss-inbox-list {
+.outlook-inbox-tabs button.is-active {
+  border-color: var(--outlook-blue);
+  background: var(--outlook-blue-light);
+  color: var(--outlook-blue);
+  font-weight: 600;
+}
+
+.outlook-list-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--outlook-text-secondary);
+  font-size: 13px;
+}
+
+.outlook-list-meta-sep {
+  color: var(--outlook-text-muted);
+}
+
+.outlook-list-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.outlook-list-actions button {
+  min-height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--outlook-border);
+  border-radius: 4px;
+  background: #ffffff;
+  color: var(--outlook-text-secondary);
+  font-family: inherit;
+  font-size: 12px;
+  cursor: default;
+}
+
+.outlook-mail-list {
   list-style: none;
   margin: 0;
   padding: 0;
   overflow-y: auto;
+  flex: 1;
 }
 
-.boss-inbox-row {
+.outlook-mail-row {
   width: 100%;
   display: grid;
-  grid-template-columns: 140px 1fr 72px;
-  grid-template-rows: auto auto;
-  gap: 2px 12px;
-  align-items: baseline;
-  border: 0;
-  border-bottom: 2px solid var(--fg);
-  background: var(--bg);
+  grid-template-columns: 18px 32px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: none;
+  border-bottom: 1px solid #f3f2f1;
+  background: #ffffff;
   text-align: left;
-  padding: 12px 16px;
   cursor: default;
 }
 
-.boss-inbox-list .is-unread .boss-inbox-row {
-  background: var(--bg);
+.outlook-mail-list li:hover .outlook-mail-row {
+  background: var(--outlook-row-hover);
 }
 
-.boss-inbox-sender {
-  grid-row: 1 / span 2;
-  font-size: 14px;
-  color: var(--fg);
+.outlook-mail-list .is-unread .outlook-mail-row {
+  background: var(--outlook-row-unread);
 }
 
-.boss-inbox-list .is-unread .boss-inbox-sender {
-  font-weight: 700;
+.outlook-mail-checkbox {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #8a8886;
+  border-radius: 2px;
+  background: #ffffff;
 }
 
-.boss-inbox-subject {
-  font-size: 14px;
-  color: var(--fg);
+.outlook-avatar-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e6e6e6;
+  color: #444444;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
-.boss-inbox-list .is-unread .boss-inbox-subject {
-  font-weight: 700;
+.outlook-mail-list .is-unread .outlook-avatar-circle {
+  background: #deecf9;
+  color: #004578;
 }
 
-.boss-inbox-preview {
-  grid-column: 2;
-  font-size: 13px;
-  color: var(--fg);
-  white-space: nowrap;
+.outlook-mail-content {
+  min-width: 0;
+}
+
+.outlook-mail-topline {
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 1.4;
 }
 
-.boss-inbox-time {
-  grid-column: 3;
-  grid-row: 1;
+.outlook-mail-sender {
+  color: var(--outlook-text);
+  margin-right: 8px;
+}
+
+.outlook-mail-list .is-unread .outlook-mail-sender,
+.outlook-mail-list .is-unread .outlook-mail-subject {
+  font-weight: 600;
+  color: var(--outlook-text);
+}
+
+.outlook-mail-subject {
+  color: var(--outlook-text);
+}
+
+.outlook-mail-dash,
+.outlook-mail-preview {
+  color: var(--outlook-text-secondary);
+  font-weight: 400;
+}
+
+.outlook-mail-time {
+  flex-shrink: 0;
   font-size: 12px;
-  color: var(--fg);
-  text-align: right;
+  color: var(--outlook-text-muted);
+  white-space: nowrap;
 }
 
-@media (max-width: 640px) {
-  .boss-inbox-body {
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-  }
+.outlook-mail-list .is-unread .outlook-mail-time {
+  color: var(--outlook-blue);
+  font-weight: 600;
+}
 
-  .boss-inbox-sidebar {
-    flex-shrink: 0;
-    border-right: none;
-    border-bottom: none;
-    padding: 8px 12px 0;
-    background: var(--bg);
-  }
-
-  .boss-inbox-compose-row {
-    margin-bottom: 0;
-  }
-
-  .boss-inbox-toolbar {
-    padding-top: 8px;
-  }
-
-  .boss-inbox-folders {
+@media (max-width: 768px) {
+  .outlook-header-search {
     display: none;
   }
 
-  .boss-inbox-main {
-    flex: 1;
-    min-height: 0;
+  .outlook-ribbon-tabs {
+    display: none;
+  }
+
+  .outlook-body {
+    grid-template-columns: 1fr;
+  }
+
+  .outlook-folders {
+    display: none;
+  }
+
+  .outlook-command-bar {
+    padding: 6px 12px;
+  }
+
+  .outlook-list-toolbar {
+    padding: 8px 12px;
+  }
+
+  .outlook-list-actions {
+    display: none;
+  }
+
+  .outlook-mail-row {
+    grid-template-columns: 32px 1fr auto;
+    padding: 10px 12px;
+  }
+
+  .outlook-mail-checkbox {
+    display: none;
+  }
+
+  .outlook-mail-topline {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .outlook-mail-dash {
+    display: none;
+  }
+
+  .outlook-mail-preview {
+    display: block;
+    margin-top: 2px;
+    font-size: 13px;
+    white-space: nowrap;
     overflow: hidden;
-    border-top: 2px solid var(--fg);
+    text-overflow: ellipsis;
+  }
+}
+
+@media (max-width: 640px) {
+  .outlook-header-title {
+    display: none;
   }
 
-  .boss-inbox-list {
-    flex: 1;
-    min-height: 0;
+  .outlook-btn-decoy {
+    display: none;
   }
 
-  .boss-inbox-row {
-    grid-template-columns: 1fr auto;
-    grid-template-rows: auto auto auto;
-  }
-
-  .boss-inbox-sender {
-    grid-row: 1;
-    grid-column: 1;
-  }
-
-  .boss-inbox-time {
-    grid-row: 1;
-    grid-column: 2;
-  }
-
-  .boss-inbox-subject {
-    grid-column: 1 / span 2;
-  }
-
-  .boss-inbox-preview {
-    grid-column: 1 / span 2;
+  .outlook-command-divider,
+  .outlook-icon-btn--ribbon {
+    display: none;
   }
 }
 

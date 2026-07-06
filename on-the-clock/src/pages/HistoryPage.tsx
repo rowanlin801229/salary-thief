@@ -1,31 +1,123 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { DoodleMarks } from '../components/DoodleMarks'
-import { RoughBox } from '../components/RoughBox'
-import { RoughButton } from '../components/RoughButton'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAppState } from '../context/AppStateContext'
 import { useCurrency } from '../context/CurrencyContext'
 import { useLanguage } from '../context/LanguageContext'
+import {
+  formatMonthGroupLabel,
+  getAllTimeSessions,
+  groupSessionsByMonth
+} from '../lib/milestones'
 import { formatCurrency } from '../lib/salary'
 import { clearTodaySessions, loadTodaySessions } from '../lib/storage'
 import { formatMinutesSeconds } from '../lib/time'
+import type { SessionRecord } from '../types'
+
+type HistoryTab = 'today' | 'allTime'
+
+function tabFromSearchParam(value: string | null): HistoryTab {
+  if (value === 'all-time' || value === 'alltime' || value === 'all-records' || value === 'month') {
+    return 'allTime'
+  }
+  return 'today'
+}
+
+function TodayRecordList({ sessions }: { sessions: SessionRecord[] }) {
+  const { t, language } = useLanguage()
+  const { symbol } = useCurrency()
+
+  if (sessions.length === 0) {
+    return <p className="wireframe-empty">{t('noRecordsToday')}</p>
+  }
+
+  return (
+    <ul className="wireframe-record-list">
+      {sessions.map((record, index) => (
+        <li key={record.id} className="wireframe-record-item wireframe-record-item-today">
+          <span className="wireframe-record-index">
+            {language === 'zh'
+              ? `${t('recordEntry')}${sessions.length - index}次`
+              : `${t('recordEntry')} ${index + 1}`}
+          </span>
+          <span className="wireframe-record-time">{formatMinutesSeconds(record.elapsedMs)}</span>
+          <span className="wireframe-record-amount">
+            {formatCurrency(symbol, record.stolenAmount)}
+          </span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+function AllTimeGroupedRecords({
+  sessions,
+  emptyText
+}: {
+  sessions: SessionRecord[]
+  emptyText: string
+}) {
+  const { t, language } = useLanguage()
+  const { symbol } = useCurrency()
+  const groups = useMemo(() => groupSessionsByMonth(sessions), [sessions])
+
+  if (groups.length === 0) {
+    return <p className="wireframe-empty">{emptyText}</p>
+  }
+
+  return (
+    <div className="history-month-groups">
+      {groups.map((group) => (
+        <section key={group.yearMonth} className="history-month-group">
+          <h2 className="history-month-heading">
+            {formatMonthGroupLabel(group.yearMonth, language)}
+          </h2>
+          <ul className="wireframe-record-list">
+            {group.sessions.map((record, index) => (
+              <li key={record.id} className="wireframe-record-item wireframe-record-item-today">
+                <span className="wireframe-record-index">
+                  {language === 'zh'
+                    ? `${t('recordEntry')}${group.sessions.length - index}次`
+                    : `${t('recordEntry')} ${index + 1}`}
+                </span>
+                <span className="wireframe-record-time">
+                  {formatMinutesSeconds(record.elapsedMs)}
+                </span>
+                <span className="wireframe-record-amount">
+                  {formatCurrency(symbol, record.stolenAmount)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+  )
+}
 
 export function HistoryPage() {
-  const { t, language } = useLanguage()
+  const { t } = useLanguage()
   const { symbol } = useCurrency()
   const { setLastSession } = useAppState()
   const location = useLocation()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [sessions, setSessions] = useState(() => loadTodaySessions())
+  const [activeTab, setActiveTab] = useState<HistoryTab>(() =>
+    tabFromSearchParam(searchParams.get('tab'))
+  )
+  const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
     setSessions(loadTodaySessions())
-  }, [location.pathname])
+    setRefreshKey((key) => key + 1)
+    setActiveTab(tabFromSearchParam(searchParams.get('tab')))
+  }, [location.pathname, searchParams])
 
   useEffect(() => {
     const refresh = () => {
       if (document.visibilityState === 'visible') {
         setSessions(loadTodaySessions())
+        setRefreshKey((key) => key + 1)
       }
     }
 
@@ -38,6 +130,9 @@ export function HistoryPage() {
     [sessions]
   )
 
+  const allTimeSessions = useMemo(() => getAllTimeSessions(), [refreshKey])
+  const emptyText = t('noData')
+
   const handleClearRecords = () => {
     if (sessions.length === 0) return
     if (!window.confirm(t('clearRecordsConfirm'))) return
@@ -47,69 +142,62 @@ export function HistoryPage() {
     setSessions([])
   }
 
+  const handleTabChange = (tab: HistoryTab) => {
+    setActiveTab(tab)
+    if (tab === 'today') {
+      navigate('/history', { replace: true })
+      return
+    }
+    navigate('/history?tab=all-time', { replace: true })
+  }
+
   return (
-    <RoughBox className="page-card history-page">
-      <DoodleMarks />
-      <div className="history-form">
-        <section className="history-group history-group-hero">
-          <p className="result-big-title history-big-title">{t('historyTitle')}</p>
-          <div className="page-cat-wrap page-cat-wrap-history">
-            <img className="page-cat" src="/cats/history-cat.png" alt="" aria-hidden />
-            <span className="page-cat-bubble page-cat-bubble-history">{t('historyCatQuote')}</span>
-          </div>
-        </section>
-        <section className="history-group history-group-total">
-          <div className="result-total-plain">
-            <p className="result-total-label">{t('todayCumulative')}</p>
-            <p className="result-total-amount">{formatCurrency(symbol, total)}</p>
-          </div>
-        </section>
+    <main className="wireframe-page history-wireframe-page">
+      <h1 className="wireframe-title">{t('historyTitle')}</h1>
 
-        <section className="history-group history-group-records">
-          {sessions.length === 0 ? (
-            <p className="history-empty">{t('noRecordsToday')}</p>
-          ) : (
-            <ul className="result-today-records history-records-list">
-              {sessions.map((record, index) => (
-                <li key={record.id} className="result-record-item">
-                  <span className="result-record-index">
-                    {language === 'zh'
-                      ? `${t('recordEntry')}${sessions.length - index}次`
-                      : `${t('recordEntry')} ${index + 1}`}
-                  </span>
-                  <span className="result-record-time">{formatMinutesSeconds(record.elapsedMs)}</span>
-                  <span className="result-record-amount">
-                    {formatCurrency(symbol, record.stolenAmount)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
-        <section
-          className={`history-group history-group-actions${sessions.length === 0 ? ' history-group-actions-single' : ''}`}
+      <div className="result-tab-bar">
+        <button
+          type="button"
+          className={`result-tab ${activeTab === 'today' ? 'is-active' : ''}`}
+          onClick={() => handleTabChange('today')}
         >
-          <RoughButton
-            type="button"
-            className="result-secondary-button"
-            frameClassName="history-action-frame"
-            onClick={() => navigate(-1)}
-          >
-            {t('back')}
-          </RoughButton>
-          {sessions.length > 0 && (
-            <RoughButton
-              type="button"
-              className="result-clear-button"
-              frameClassName="history-action-frame"
-              onClick={handleClearRecords}
-            >
-              {t('clearRecords')}
-            </RoughButton>
-          )}
-        </section>
+          {t('tabTodayRecords')}
+        </button>
+        <button
+          type="button"
+          className={`result-tab ${activeTab === 'allTime' ? 'is-active' : ''}`}
+          onClick={() => handleTabChange('allTime')}
+        >
+          {t('tabAllTimeRecords')}
+        </button>
       </div>
-    </RoughBox>
+
+      {activeTab === 'today' && (
+        <section className="result-tab-content wireframe-content">
+          <div className="wireframe-stat">
+            <p className="wireframe-stat-label">{t('todayCumulative')}</p>
+            <p className="wireframe-stat-value">{formatCurrency(symbol, total)}</p>
+          </div>
+          <TodayRecordList sessions={sessions} />
+        </section>
+      )}
+
+      {activeTab === 'allTime' && (
+        <section className="result-tab-content wireframe-content">
+          <AllTimeGroupedRecords sessions={allTimeSessions} emptyText={emptyText} />
+        </section>
+      )}
+
+      <div className="wireframe-actions">
+        <button type="button" className="wireframe-button" onClick={() => navigate('/result')}>
+          {t('back')}
+        </button>
+        {activeTab === 'today' && sessions.length > 0 && (
+          <button type="button" className="wireframe-button" onClick={handleClearRecords}>
+            {t('clearRecords')}
+          </button>
+        )}
+      </div>
+    </main>
   )
 }
