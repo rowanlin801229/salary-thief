@@ -91,6 +91,44 @@ type LabelKey =
   | 'allTimeTotal'
   | 'noData'
   | 'viewDetailRecords'
+  | 'loginSubtitle'
+  | 'signInTitle'
+  | 'signInSubtitle'
+  | 'signUpTitle'
+  | 'signUpSubtitle'
+  | 'noAccount'
+  | 'signUpLink'
+  | 'haveAccount'
+  | 'signInLink'
+  | 'termsText'
+  | 'loginWithGoogle'
+  | 'loginOr'
+  | 'loginEmailLabel'
+  | 'loginEmailPlaceholder'
+  | 'loginSendCode'
+  | 'authGoogleError'
+  | 'authEmailError'
+  | 'verifyEmailTitle'
+  | 'verifyEmailSent'
+  | 'verifyDevCode'
+  | 'verifyCodeDigit'
+  | 'verifySubmit'
+  | 'verifyResend'
+  | 'verifyResendWait'
+  | 'authCodeIncomplete'
+  | 'authCodeInvalid'
+  | 'setupProfileTitle'
+  | 'setupProfileSubtitle'
+  | 'setupProfileNameLabel'
+  | 'setupProfileNamePlaceholder'
+  | 'setupProfileSubmit'
+  | 'profileNameRequired'
+  | 'profileSaveError'
+  | 'userProfileTitle'
+  | 'profileEditName'
+  | 'profileSave'
+  | 'profileSignOut'
+  | 'userMenuFallback'
 
 export const labelColors: string[] = ['#000000', '#000000', '#000000', '#000000', '#000000']
 
@@ -185,7 +223,46 @@ export const translations: Record<Language, Record<LabelKey, string>> = {
     bestSingleAllTime: 'All-Time Best',
     allTimeTotal: 'Lifetime Total',
     noData: 'No data yet',
-    viewDetailRecords: 'View Records'
+    viewDetailRecords: 'View Records',
+    loginSubtitle: 'Sign in to save your stats',
+    signInTitle: 'Sign In',
+    signInSubtitle: 'Welcome back',
+    signUpTitle: 'Get Started',
+    signUpSubtitle: 'Create your On The Clock account',
+    noAccount: "Don't have an account? ",
+    signUpLink: 'Sign up',
+    haveAccount: 'Already have an account? ',
+    signInLink: 'Sign in',
+    termsText:
+      'By signing up, you agree to our Terms of Service. Your timing data is stored only in your account.',
+    loginWithGoogle: 'Continue with Google',
+    loginOr: 'or',
+    loginEmailLabel: 'Email',
+    loginEmailPlaceholder: 'you@company.com',
+    loginSendCode: 'Send verification code',
+    authGoogleError: 'Google sign-in failed. Please try again.',
+    authEmailError: 'Could not send verification code.',
+    verifyEmailTitle: 'Verify your email',
+    verifyEmailSent: 'We sent a 6-digit code to',
+    verifyDevCode: 'Dev code',
+    verifyCodeDigit: 'Digit',
+    verifySubmit: 'Verify',
+    verifyResend: 'Resend code',
+    verifyResendWait: 'Resend in',
+    authCodeIncomplete: 'Enter the full 6-digit code.',
+    authCodeInvalid: 'Invalid or expired code.',
+    setupProfileTitle: 'Set up your profile',
+    setupProfileSubtitle: 'Choose a display name',
+    setupProfileNameLabel: 'Display name',
+    setupProfileNamePlaceholder: 'Your name',
+    setupProfileSubmit: 'Continue',
+    profileNameRequired: 'Please enter a display name.',
+    profileSaveError: 'Could not save profile.',
+    userProfileTitle: 'Profile',
+    profileEditName: 'Edit name',
+    profileSave: 'Save',
+    profileSignOut: 'Sign out',
+    userMenuFallback: 'User'
   },
   zh: {
     appTitle: '薪水小偷',
@@ -277,6 +354,44 @@ export const translations: Record<Language, Record<LabelKey, string>> = {
     bestSingleAllTime: '全時間最高',
     allTimeTotal: '累計總金額',
     noData: '暫無數據',
-    viewDetailRecords: '查看詳細紀錄'
+    viewDetailRecords: '查看詳細紀錄',
+    loginSubtitle: '登入以儲存你的戰績',
+    signInTitle: '登入',
+    signInSubtitle: '歡迎回來',
+    signUpTitle: '開始使用',
+    signUpSubtitle: '建立你的薪水小偷帳戶',
+    noAccount: '沒有帳戶？',
+    signUpLink: '註冊',
+    haveAccount: '已有帳戶？',
+    signInLink: '登入',
+    termsText: '使用薪水小偷即表示您同意服務條款。您的計時資料只會存在您的帳戶中。',
+    loginWithGoogle: '使用 Google 登入',
+    loginOr: '或',
+    loginEmailLabel: 'Email',
+    loginEmailPlaceholder: 'you@company.com',
+    loginSendCode: '發送驗證碼',
+    authGoogleError: 'Google 登入失敗，請再試一次',
+    authEmailError: '無法發送驗證碼',
+    verifyEmailTitle: '驗證 Email',
+    verifyEmailSent: '驗證碼已發送至',
+    verifyDevCode: '開發模式驗證碼',
+    verifyCodeDigit: '第',
+    verifySubmit: '驗證',
+    verifyResend: '重新發送',
+    verifyResendWait: '重新發送',
+    authCodeIncomplete: '請輸入完整 6 位驗證碼',
+    authCodeInvalid: '驗證碼錯誤或已過期',
+    setupProfileTitle: '設定個人檔案',
+    setupProfileSubtitle: '選擇你的顯示名稱',
+    setupProfileNameLabel: '顯示名稱',
+    setupProfileNamePlaceholder: '你的名字',
+    setupProfileSubmit: '完成',
+    profileNameRequired: '請輸入顯示名稱',
+    profileSaveError: '無法儲存個人檔案',
+    userProfileTitle: '用戶檔案',
+    profileEditName: '編輯昵稱',
+    profileSave: '儲存',
+    profileSignOut: '登出',
+    userMenuFallback: '用戶'
   }
 }

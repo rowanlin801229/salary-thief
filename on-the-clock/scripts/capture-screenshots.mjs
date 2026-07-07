@@ -137,6 +137,18 @@ async function main() {
   })
   console.log('saved 09-milestones-alltime.png')
 
+  await capture(page, '/signin', '10-signin.png')
+  await capture(page, '/signup', '10b-signup.png')
+
+  await page.addInitScript(() => {
+    sessionStorage.setItem('on-the-clock/pending-email', 'demo@company.com')
+    sessionStorage.setItem('on-the-clock/dev-verification-code', '123456')
+  })
+  await page.goto(`${BASE_URL}/verify-email`, { waitUntil: 'networkidle' })
+  await page.waitForTimeout(500)
+  await page.screenshot({ path: path.join(OUT_DIR, '11-verify-email.png'), fullPage: true })
+  console.log('saved 11-verify-email.png')
+
   await browser.close()
   console.log(`\nScreenshots saved to: ${OUT_DIR}`)
 }

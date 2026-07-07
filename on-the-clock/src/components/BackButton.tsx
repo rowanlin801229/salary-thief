@@ -35,6 +35,8 @@ export function BackButton() {
       navigate('/result')
     } else if (location.pathname === '/achievement') {
       navigate('/result')
+    } else if (location.pathname === '/user-profile') {
+      navigate('/result')
     }
   }
 

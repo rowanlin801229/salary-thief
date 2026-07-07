@@ -1,6 +1,7 @@
 import { useLanguage } from '../context/LanguageContext'
 import { ClockLogo } from './ClockLogo'
 import { NavMenu } from './NavMenu'
+import { UserMenu } from './UserMenu'
 import { RoughButton } from './RoughButton'
 
 export function Header() {
@@ -23,6 +24,7 @@ export function Header() {
             中文
           </RoughButton>
         </div>
+        <UserMenu />
         <NavMenu />
       </div>
     </header>
