@@ -10,13 +10,13 @@ export function Header() {
   return (
     <header className="app-header">
       <div className="app-header-brand">
-        <span className="app-logo" aria-hidden>
+        <span className="app-logo" aria-label={t('appTitle')}>
           <ClockLogo className="app-logo-clock" />
         </span>
-        <h1>{t('appTitle')}</h1>
       </div>
+
       <div className="app-header-actions">
-        <div className="lang-toggle">
+        <div className="lang-toggle app-lang-switcher" role="group" aria-label="Language">
           <RoughButton type="button" active={language === 'en'} onClick={() => setLanguage('en')}>
             EN
           </RoughButton>
@@ -24,6 +24,7 @@ export function Header() {
             中文
           </RoughButton>
         </div>
+
         <UserMenu />
         <NavMenu />
       </div>

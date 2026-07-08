@@ -42,7 +42,7 @@ export function UserMenu() {
   }
 
   return (
-    <div className="user-menu" ref={menuRef}>
+    <div className="user-menu app-user-section" ref={menuRef}>
       <button
         type="button"
         className="user-menu-trigger"
@@ -50,14 +50,14 @@ export function UserMenu() {
         aria-haspopup="menu"
         onClick={() => setOpen((value) => !value)}
       >
-        {user.photoURL ? (
-          <img className="user-menu-avatar" src={user.photoURL} alt="" />
+        {profile?.photoURL || user.photoURL ? (
+          <img className="user-menu-avatar" src={profile?.photoURL || user.photoURL || ''} alt="" />
         ) : (
           <span className="user-menu-avatar user-menu-avatar-fallback">
             {displayName.slice(0, 1).toUpperCase()}
           </span>
         )}
-        <span className="user-menu-name">{displayName}</span>
+        <span className="user-menu-name app-user-name">{displayName}</span>
       </button>
 
       {open && (

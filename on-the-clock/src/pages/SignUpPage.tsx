@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { AuthLangSwitcher } from '../components/AuthLangSwitcher'
 import { useAuth } from '../context/AuthContext'
 import { useLanguage } from '../context/LanguageContext'
 
@@ -39,6 +40,7 @@ export function SignUpPage() {
 
   return (
     <main className="auth-page">
+      <AuthLangSwitcher />
       <div className="auth-card">
         <h1 className="auth-title">{t('signUpTitle')}</h1>
         <p className="auth-subtitle">{t('signUpSubtitle')}</p>

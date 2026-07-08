@@ -61,6 +61,10 @@ export async function updateUserDisplayName(userId: string, displayName: string)
   await updateDoc(doc(db, 'users', userId), { displayName })
 }
 
+export async function updateUserPhotoURL(userId: string, photoURL: string): Promise<void> {
+  await updateDoc(doc(db, 'users', userId), { photoURL })
+}
+
 export function isProfileComplete(profile: UserProfile | null): boolean {
   return Boolean(profile?.displayName?.trim())
 }

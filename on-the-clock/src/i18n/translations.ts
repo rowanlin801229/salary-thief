@@ -112,11 +112,19 @@ type LabelKey =
   | 'verifyEmailSent'
   | 'verifyDevCode'
   | 'verifyCodeDigit'
+  | 'verifyCodeExpire'
   | 'verifySubmit'
   | 'verifyResend'
   | 'verifyResendWait'
   | 'authCodeIncomplete'
   | 'authCodeInvalid'
+  | 'authSignInError'
+  | 'authProviderConflict'
+  | 'uploadProfilePhoto'
+  | 'uploadingPhoto'
+  | 'photoSizeError'
+  | 'photoFormatError'
+  | 'photoUpdateSuccess'
   | 'setupProfileTitle'
   | 'setupProfileSubtitle'
   | 'setupProfileNameLabel'
@@ -129,6 +137,7 @@ type LabelKey =
   | 'profileSave'
   | 'profileSignOut'
   | 'userMenuFallback'
+  | 'navDrawerTitle'
 
 export const labelColors: string[] = ['#000000', '#000000', '#000000', '#000000', '#000000']
 
@@ -246,11 +255,20 @@ export const translations: Record<Language, Record<LabelKey, string>> = {
     verifyEmailSent: 'We sent a 6-digit code to',
     verifyDevCode: 'Dev code',
     verifyCodeDigit: 'Digit',
+    verifyCodeExpire: 'Verification code expires in 10 minutes',
     verifySubmit: 'Verify',
     verifyResend: 'Resend code',
     verifyResendWait: 'Resend in',
     authCodeIncomplete: 'Enter the full 6-digit code.',
     authCodeInvalid: 'Invalid or expired code.',
+    authSignInError: 'Code accepted, but sign-in failed. Please try again.',
+    authProviderConflict:
+      'This email already uses Google sign-in. Please continue with Google instead.',
+    uploadProfilePhoto: 'Upload Photo',
+    uploadingPhoto: 'Uploading...',
+    photoSizeError: 'Image too large (max 5MB)',
+    photoFormatError: 'Only JPEG, PNG, WebP',
+    photoUpdateSuccess: 'Photo updated',
     setupProfileTitle: 'Set up your profile',
     setupProfileSubtitle: 'Choose a display name',
     setupProfileNameLabel: 'Display name',
@@ -262,7 +280,8 @@ export const translations: Record<Language, Record<LabelKey, string>> = {
     profileEditName: 'Edit name',
     profileSave: 'Save',
     profileSignOut: 'Sign out',
-    userMenuFallback: 'User'
+    userMenuFallback: 'User',
+    navDrawerTitle: 'Menu'
   },
   zh: {
     appTitle: '薪水小偷',
@@ -376,11 +395,19 @@ export const translations: Record<Language, Record<LabelKey, string>> = {
     verifyEmailSent: '驗證碼已發送至',
     verifyDevCode: '開發模式驗證碼',
     verifyCodeDigit: '第',
+    verifyCodeExpire: '驗證碼有效期 10 分鐘',
     verifySubmit: '驗證',
     verifyResend: '重新發送',
     verifyResendWait: '重新發送',
     authCodeIncomplete: '請輸入完整 6 位驗證碼',
     authCodeInvalid: '驗證碼錯誤或已過期',
+    authSignInError: '驗證碼正確，但登入失敗，請再試一次',
+    authProviderConflict: '這個 Email 已用 Google 註冊，請改用 Google 登入',
+    uploadProfilePhoto: '上傳頭像',
+    uploadingPhoto: '上傳中...',
+    photoSizeError: '圖片過大（最大 5MB）',
+    photoFormatError: '只支持 JPEG、PNG、WebP',
+    photoUpdateSuccess: '已更新',
     setupProfileTitle: '設定個人檔案',
     setupProfileSubtitle: '選擇你的顯示名稱',
     setupProfileNameLabel: '顯示名稱',
@@ -392,6 +419,7 @@ export const translations: Record<Language, Record<LabelKey, string>> = {
     profileEditName: '編輯昵稱',
     profileSave: '儲存',
     profileSignOut: '登出',
-    userMenuFallback: '用戶'
+    userMenuFallback: '用戶',
+    navDrawerTitle: '選單'
   }
 }

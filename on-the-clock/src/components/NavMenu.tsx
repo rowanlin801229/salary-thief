@@ -1,26 +1,18 @@
-import { useEffect, useRef, useState } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import { useLanguage } from '../context/LanguageContext'
+import { NavDrawer } from './NavDrawer'
 import { RoughButton } from './RoughButton'
-import { RoughFrame } from './RoughFrame'
 
 const navItems = [
   { to: '/timer', labelKey: 'timer' },
   { to: '/result', labelKey: 'result' },
   { to: '/history', labelKey: 'history' },
-  { to: '/achievement', labelKey: 'achievement' }
+  { to: '/achievement', labelKey: 'achievement' },
 ] as const
 
-function MenuIcon({ open }: { open: boolean }) {
-  if (open) {
-    return (
-      <svg className="nav-menu-icon" viewBox="0 0 24 24" aria-hidden>
-        <path d="M6 6 L18 18" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" />
-        <path d="M18 6 L6 18" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" />
-      </svg>
-    )
-  }
-
+function MenuIcon() {
   return (
     <svg className="nav-menu-icon" viewBox="0 0 24 24" aria-hidden>
       <path d="M4 7 H20" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" />
@@ -30,61 +22,81 @@ function MenuIcon({ open }: { open: boolean }) {
   )
 }
 
+function CloseIcon() {
+  return (
+    <svg className="nav-drawer-close-icon" viewBox="0 0 24 24" aria-hidden>
+      <path d="M6 6 L18 18" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+      <path d="M18 6 L6 18" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 export function NavMenu() {
   const { t, language } = useLanguage()
+  const { user, profile } = useAuth()
   const [open, setOpen] = useState(false)
-  const menuRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
+  const navigate = useNavigate()
 
   useEffect(() => {
     setOpen(false)
   }, [location.pathname])
 
-  useEffect(() => {
-    if (!open) return
-
-    const handlePointerDown = (event: PointerEvent) => {
-      if (!menuRef.current?.contains(event.target as Node)) {
-        setOpen(false)
-      }
-    }
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setOpen(false)
-      }
-    }
-
-    document.addEventListener('pointerdown', handlePointerDown)
-    document.addEventListener('keydown', handleKeyDown)
-    return () => {
-      document.removeEventListener('pointerdown', handlePointerDown)
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [open])
+  const displayName =
+    profile?.displayName || user?.displayName || user?.email || t('userMenuFallback')
+  const photoURL = profile?.photoURL || user?.photoURL || ''
 
   return (
-    <div className="nav-menu" ref={menuRef}>
+    <div className="nav-menu">
       <RoughButton
         type="button"
         className="nav-menu-toggle"
         frameClassName="nav-menu-toggle-frame"
-        active={open}
         aria-expanded={open}
-        aria-haspopup="menu"
+        aria-haspopup="dialog"
         aria-label={language === 'zh' ? '開啟選單' : 'Open menu'}
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => setOpen(true)}
       >
-        <MenuIcon open={open} />
+        <MenuIcon />
       </RoughButton>
 
-      {open && (
-        <RoughFrame
-          className="nav-menu-panel"
-        stroke="#000000"
-        fill="#FFFFFF"
-          contentClassName="nav-menu-panel-content"
-        >
+      <NavDrawer isOpen={open} onClose={() => setOpen(false)}>
+        <div className="nav-drawer-header">
+          <span className="nav-drawer-title">{t('navDrawerTitle')}</span>
+          <button
+            type="button"
+            className="nav-drawer-close"
+            aria-label={language === 'zh' ? '關閉選單' : 'Close menu'}
+            onClick={() => setOpen(false)}
+          >
+            <CloseIcon />
+          </button>
+        </div>
+
+        {user && (
+          <>
+            <button
+              type="button"
+              className="nav-drawer-user"
+              onClick={() => {
+                setOpen(false)
+                navigate('/user-profile')
+              }}
+            >
+              {photoURL ? (
+                <img className="nav-drawer-avatar" src={photoURL} alt="" />
+              ) : (
+                <span className="nav-drawer-avatar nav-drawer-avatar-fallback">
+                  {displayName.slice(0, 1).toUpperCase()}
+                </span>
+              )}
+              <span className="nav-drawer-user-name">{displayName}</span>
+            </button>
+            <div className="nav-drawer-divider" />
+          </>
+        )}
+
+        <nav className="nav-drawer-nav" aria-label={language === 'zh' ? '導覽' : 'Navigation'}>
           <ul className="nav-menu-list" role="menu">
             {navItems.map((item) => (
               <li key={item.to} role="none">
@@ -94,13 +106,16 @@ export function NavMenu() {
                   className={({ isActive }) => `nav-menu-link${isActive ? ' is-active' : ''}`}
                   onClick={() => setOpen(false)}
                 >
-                  {t(item.labelKey)}
+                  <span>{t(item.labelKey)}</span>
+                  <span className="nav-drawer-chevron" aria-hidden="true">
+                    ›
+                  </span>
                 </NavLink>
               </li>
             ))}
           </ul>
-        </RoughFrame>
-      )}
+        </nav>
+      </NavDrawer>
     </div>
   )
 }

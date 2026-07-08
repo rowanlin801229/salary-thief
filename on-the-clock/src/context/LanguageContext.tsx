@@ -1,6 +1,8 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react'
 import { translations } from '../i18n/translations'
 import type { Language } from '../types'
+
+const LANGUAGE_STORAGE_KEY = 'on-the-clock/language'
 
 interface LanguageContextValue {
   language: Language
@@ -10,8 +12,18 @@ interface LanguageContextValue {
 
 const LanguageContext = createContext<LanguageContextValue | null>(null)
 
+function loadLanguage(): Language {
+  const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY)
+  return saved === 'en' || saved === 'zh' ? saved : 'zh'
+}
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Language>('zh')
+  const [language, setLanguageState] = useState<Language>(() => loadLanguage())
+
+  const setLanguage = useCallback((next: Language) => {
+    setLanguageState(next)
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, next)
+  }, [])
 
   const value = useMemo<LanguageContextValue>(() => {
     const dictionary = translations[language]
@@ -20,7 +32,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       setLanguage,
       t: (key) => dictionary[key]
     }
-  }, [language])
+  }, [language, setLanguage])
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>
 }

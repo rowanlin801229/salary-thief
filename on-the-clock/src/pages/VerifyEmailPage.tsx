@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useLanguage } from '../context/LanguageContext'
@@ -13,10 +13,10 @@ export function VerifyEmailPage() {
   const [digits, setDigits] = useState<string[]>(Array(CODE_LENGTH).fill(''))
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [resending, setResending] = useState(false)
   const [countdown, setCountdown] = useState(60)
+  const [devCode, setDevCode] = useState<string | null>(() => getDevVerificationCode())
   const inputRefs = useRef<Array<HTMLInputElement | null>>([])
-
-  const devCode = useMemo(() => getDevVerificationCode(), [])
 
   useEffect(() => {
     if (!pendingEmail) {
@@ -35,6 +35,7 @@ export function VerifyEmailPage() {
   }, [countdown])
 
   const code = digits.join('')
+  const canResend = countdown === 0 && !resending && Boolean(pendingEmail)
 
   const handleDigitChange = (index: number, value: string) => {
     const next = value.replace(/\D/g, '').slice(-1)
@@ -79,25 +80,43 @@ export function VerifyEmailPage() {
     try {
       await verifyEmailCode(code)
       navigate('/setup-profile')
-    } catch {
-      setError(t('authCodeInvalid'))
-      clearDigits()
-      inputRefs.current[0]?.focus()
+    } catch (error) {
+      const message = error instanceof Error ? error.message : ''
+      if (
+        message === 'verification_invalid' ||
+        message === 'verification_expired' ||
+        message === 'verification_not_found'
+      ) {
+        setError(t('authCodeInvalid'))
+        clearDigits()
+        inputRefs.current[0]?.focus()
+      } else if (message === 'auth_provider_conflict') {
+        setError(t('authProviderConflict'))
+      } else {
+        // Code matched; Auth/Firestore failed.
+        console.error('[verifyEmail] auth/profile failed after valid code', error)
+        setError(t('authSignInError'))
+      }
     } finally {
       setSubmitting(false)
     }
   }
 
   const handleResend = async () => {
-    if (!pendingEmail || countdown > 0) return
+    if (!canResend || !pendingEmail) return
+
     setError(null)
+    setResending(true)
     try {
-      await signInWithEmail(pendingEmail)
+      const nextCode = await signInWithEmail(pendingEmail)
       setCountdown(60)
       clearDigits()
+      setDevCode(nextCode || getDevVerificationCode())
       inputRefs.current[0]?.focus()
     } catch {
       setError(t('authEmailError'))
+    } finally {
+      setResending(false)
     }
   }
 
@@ -139,6 +158,8 @@ export function VerifyEmailPage() {
           ))}
         </div>
 
+        <p className="auth-code-hint">{t('verifyCodeExpire')}</p>
+
         <button
           type="button"
           className="auth-btn auth-btn-primary"
@@ -152,9 +173,13 @@ export function VerifyEmailPage() {
           type="button"
           className="auth-btn auth-btn-secondary"
           onClick={handleResend}
-          disabled={countdown > 0}
+          disabled={!canResend}
         >
-          {countdown > 0 ? `${t('verifyResendWait')} ${countdown}s` : t('verifyResend')}
+          {countdown > 0
+            ? `${t('verifyResendWait')} ${countdown}s`
+            : resending
+              ? t('verifyResendWait')
+              : t('verifyResend')}
         </button>
       </div>
     </main>

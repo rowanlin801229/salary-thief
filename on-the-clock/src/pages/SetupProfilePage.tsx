@@ -1,15 +1,21 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState, type ChangeEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { AvatarEditor } from '../components/AvatarEditor'
 import { useAuth } from '../context/AuthContext'
 import { useLanguage } from '../context/LanguageContext'
+import { uploadProfileImage } from '../lib/imageUpload'
 
 export function SetupProfilePage() {
   const { t } = useLanguage()
   const { user, profile, updateUserProfile } = useAuth()
   const navigate = useNavigate()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [displayName, setDisplayName] = useState('')
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [pendingPhotoDataUrl, setPendingPhotoDataUrl] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [uploading, setUploading] = useState(false)
 
   useEffect(() => {
     if (!user) {
@@ -23,6 +29,43 @@ export function SetupProfilePage() {
     setDisplayName(profile?.displayName || user.displayName || '')
   }, [user, profile, navigate])
 
+  useEffect(() => {
+    return () => {
+      if (previewUrl?.startsWith('blob:')) URL.revokeObjectURL(previewUrl)
+    }
+  }, [previewUrl])
+
+  const currentPhoto = previewUrl || pendingPhotoDataUrl || profile?.photoURL || user?.photoURL || ''
+
+  const handleImageSelect = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file || !user) return
+
+    setError(null)
+    setUploading(true)
+    try {
+      const objectUrl = URL.createObjectURL(file)
+      setPreviewUrl((prev) => {
+        if (prev?.startsWith('blob:')) URL.revokeObjectURL(prev)
+        return objectUrl
+      })
+      const dataUrl = await uploadProfileImage(file, user.uid)
+      setPendingPhotoDataUrl(dataUrl)
+      setPreviewUrl((prev) => {
+        if (prev?.startsWith('blob:')) URL.revokeObjectURL(prev)
+        return dataUrl
+      })
+    } catch (uploadError) {
+      const message = uploadError instanceof Error ? uploadError.message : ''
+      if (message === 'photo_format') setError(t('photoFormatError'))
+      else if (message === 'photo_size') setError(t('photoSizeError'))
+      else setError(t('profileSaveError'))
+    } finally {
+      setUploading(false)
+    }
+  }
+
   const handleSubmit = async () => {
     const trimmed = displayName.trim()
     if (!trimmed) {
@@ -33,7 +76,7 @@ export function SetupProfilePage() {
     setError(null)
     setSubmitting(true)
     try {
-      await updateUserProfile(trimmed)
+      await updateUserProfile(trimmed, pendingPhotoDataUrl ?? undefined)
       navigate('/result')
     } catch {
       setError(t('profileSaveError'))
@@ -51,13 +94,20 @@ export function SetupProfilePage() {
         <p className="auth-subtitle">{t('setupProfileSubtitle')}</p>
 
         <div className="auth-avatar-wrap">
-          {user.photoURL ? (
-            <img className="auth-avatar" src={user.photoURL} alt="" />
-          ) : (
-            <span className="auth-avatar auth-avatar-fallback">
-              {(displayName || user.email || '?').slice(0, 1).toUpperCase()}
-            </span>
-          )}
+          <AvatarEditor
+            photoSrc={currentPhoto}
+            fallbackText={(displayName || user.email || '?').slice(0, 1).toUpperCase()}
+            uploading={uploading}
+            onPick={() => fileInputRef.current?.click()}
+            title={uploading ? t('uploadingPhoto') : t('uploadProfilePhoto')}
+          />
+          <input
+            ref={fileInputRef}
+            className="auth-file-input"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handleImageSelect}
+          />
         </div>
 
         <label className="auth-label" htmlFor="profile-name">
@@ -79,7 +129,7 @@ export function SetupProfilePage() {
           type="button"
           className="auth-btn auth-btn-primary"
           onClick={handleSubmit}
-          disabled={submitting}
+          disabled={submitting || uploading}
         >
           {t('setupProfileSubmit')}
         </button>
