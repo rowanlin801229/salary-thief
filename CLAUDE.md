@@ -1370,21 +1370,37 @@ await setDoc(doc(db, 'mail', `${docId}-${Date.now()}`), {
 確認 import 有加上 setDoc 和 doc（已有就不用重複）。
 ```
 
+### ✅ 今日完成進度（2026-07-09 18:53）
+
+| 項目 | 狀態 | 說明 |
+|------|------|------|
+| Firebase Extension 安裝 | ✅ | "Trigger Email from Firestore" 安裝成功（重試後 Eventarc 權限自動通過）|
+| emailVerification.ts 加發信 | ✅ | `createEmailVerification()` 寫入 `mail` collection，觸發 Extension 發信 |
+| 推上 Vercel | ✅ | commit `3aebc1d`，Production 狀態 Ready |
+
 ### ❌ 尚未完成的功能（2026-07-09 現況）
 
 | 功能 | 狀態 | 說明 |
 |------|------|------|
-| Email 驗證信 | ❌ 沒有發信 | Extension 有 Eventarc 權限錯誤，emailVerification.ts 也還沒加寫 `mail` collection 的程式碼 |
-| 排行榜 | ❌ 只有假資料 | Wireframe 已做，但沒接 Firebase 真實資料 |
+| Email 驗證信實測 | ⏳ 待測試 | 程式碼已推上去，**還沒用手機實際測試**收信 |
+| 排行榜 | ❌ 只有假資料 | Wireframe 已做（commit `4ea2ec6`），但沒接 Firebase 真實資料 |
 | 朋友邀請系統 | ❌ 完全沒開始 | 邀請碼生成、朋友關係建立、朋友排行榜都還沒做 |
-| Email 用戶歡迎訊息 | ⏳ 待做 | 舊用戶輸入 email 後顯示「歡迎回來」vs 新用戶「歡迎加入」（Email 發信修好後再做）|
+| Email 用戶歡迎訊息 | ⏳ 待做 | 舊用戶輸入 email 後顯示「歡迎回來」vs 新用戶「歡迎加入」（Email 測試成功後再做）|
 
-### 下次行動清單（依優先順序）
+### 下次開 chat 做什麼（依優先順序）
 
-1. **Fix Extension 錯誤** — Firebase Console → Extensions → 點「重試安裝作業」；若仍失敗，去 GCP IAM 補 Eventarc Service Agent 權限
-2. **Cursor 加發信邏輯** — 用上面的 Prompt，修改 emailVerification.ts（寫入 `mail` collection）
-3. **Push Vercel** — `git push v0-ui main`
-4. **手機測試 Email 驗證** — 確認真的收到驗證碼信
-5. **排行榜接 Firebase** — 把假資料換成真實 Firestore 資料
-6. **朋友邀請系統** — 邀請碼生成 + 朋友排行榜
+1. **手機測試 Email 驗證**（最優先）
+   - 打開 `salary-thief-ui.vercel.app` 或 `on-the-clock-app.vercel.app`
+   - 用 email 登入，輸入任一信箱
+   - 確認有沒有收到驗證碼信
+   - 若沒收到 → 去 Firebase Console → Firestore → `mail` collection 看有沒有資料進來
+
+2. **排行榜接 Firebase 真實資料**
+   - 目前是假資料，要換成 Firestore 真實的用戶摸魚時間
+   - 需要設計 Firestore 資料結構：每次 session 要存 `elapsedMs` 到 `sessions/{userId}/` collection
+
+3. **朋友邀請系統**（最後做）
+   - 邀請碼生成
+   - 朋友關係建立（`friends/{userId}/{friendUserId}`）
+   - 朋友排行榜（只顯示朋友的排名）
 

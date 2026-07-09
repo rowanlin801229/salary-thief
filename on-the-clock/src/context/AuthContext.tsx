@@ -129,8 +129,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       if (existingPassword) {
         console.log('[AuthContext] Step 3: signing in EXISTING user...')
-        await signInWithEmailAndPassword(auth, email, existingPassword)
-        console.log('[AuthContext] Step 3 SUCCESS: existing user signed in')
+        try {
+          await signInWithEmailAndPassword(auth, email, existingPassword)
+          console.log('[AuthContext] Step 3 SUCCESS: existing user signed in')
+        } catch (signInError) {
+          const err = signInError as { code?: string }
+          if (
+            err.code === 'auth/user-not-found' ||
+            err.code === 'auth/invalid-credential' ||
+            err.code === 'auth/invalid-login-credentials'
+          ) {
+            // Auth user was deleted but emailAuth record still exists → re-create
+            console.log('[AuthContext] Step 3: Auth user missing, re-creating...')
+            const credential = await createUserWithEmailAndPassword(auth, email, existingPassword)
+            await updateProfile(credential.user, { displayName: '' })
+            await saveEmailAuthPassword(email, existingPassword)
+            console.log('[AuthContext] Step 3 SUCCESS: user re-created', credential.user.uid)
+          } else {
+            throw signInError
+          }
+        }
       } else {
         console.log('[AuthContext] Step 3: creating NEW user...')
         try {
