@@ -1,14 +1,27 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { AvatarEditor } from '../components/AvatarEditor'
+import { useAppState } from '../context/AppStateContext'
 import { useAuth } from '../context/AuthContext'
 import { useLanguage } from '../context/LanguageContext'
 import { uploadProfileImage } from '../lib/imageUpload'
+import { isScheduleComplete } from '../lib/salary'
+import type { SalaryConfig } from '../types'
+
+function getDestination(salaryConfig: SalaryConfig, from?: string): string {
+  const hasSalary = salaryConfig.amount > 0 && isScheduleComplete(salaryConfig)
+  if (!hasSalary) return '/setup'
+  if (from && from !== '/signin' && from !== '/signup') return from
+  return '/result'
+}
 
 export function SetupProfilePage() {
   const { t } = useLanguage()
   const { user, profile, updateUserProfile } = useAuth()
+  const { salaryConfig } = useAppState()
   const navigate = useNavigate()
+  const location = useLocation()
+  const from = (location.state as { from?: string } | null)?.from
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [displayName, setDisplayName] = useState('')
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -19,15 +32,15 @@ export function SetupProfilePage() {
 
   useEffect(() => {
     if (!user) {
-      navigate('/signin', { replace: true })
+      navigate('/signin', { replace: true, state: { from } })
       return
     }
     if (profile?.displayName?.trim()) {
-      navigate('/result', { replace: true })
+      navigate(getDestination(salaryConfig, from), { replace: true })
       return
     }
     setDisplayName(profile?.displayName || user.displayName || '')
-  }, [user, profile, navigate])
+  }, [user, profile, navigate, salaryConfig, from])
 
   useEffect(() => {
     return () => {
@@ -77,7 +90,7 @@ export function SetupProfilePage() {
     setSubmitting(true)
     try {
       await updateUserProfile(trimmed, pendingPhotoDataUrl ?? undefined)
-      navigate('/result')
+      navigate(getDestination(salaryConfig, from))
     } catch {
       setError(t('profileSaveError'))
     } finally {

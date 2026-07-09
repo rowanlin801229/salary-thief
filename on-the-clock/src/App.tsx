@@ -57,38 +57,10 @@ function App() {
                   <Route element={<AppLayout />}>
                     <Route path="/" element={<Navigate to="/result" replace />} />
                     <Route path="/setup" element={<SetupPage />} />
-                    <Route
-                      path="/timer"
-                      element={
-                        <ProtectedRoute>
-                          <TimerPage />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/result"
-                      element={
-                        <ProtectedRoute>
-                          <ResultPage />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/history"
-                      element={
-                        <ProtectedRoute>
-                          <HistoryPage />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/achievement"
-                      element={
-                        <ProtectedRoute>
-                          <AchievementPage />
-                        </ProtectedRoute>
-                      }
-                    />
+                    <Route path="/timer" element={<TimerPage />} />
+                    <Route path="/result" element={<ResultPage />} />
+                    <Route path="/history" element={<HistoryPage />} />
+                    <Route path="/achievement" element={<AchievementPage />} />
                     <Route
                       path="/leaderboard"
                       element={

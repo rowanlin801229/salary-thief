@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { AuthLangSwitcher } from '../components/AuthLangSwitcher'
 import { useAuth } from '../context/AuthContext'
 import { useLanguage } from '../context/LanguageContext'
@@ -8,6 +8,8 @@ export function SignInPage() {
   const { t } = useLanguage()
   const { signInWithGoogle, signInWithEmail } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const from = (location.state as { from?: string } | null)?.from
   const [email, setEmail] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -17,7 +19,7 @@ export function SignInPage() {
     setSubmitting(true)
     try {
       await signInWithGoogle()
-      navigate('/setup-profile')
+      navigate('/setup-profile', { state: { from }, replace: true })
     } catch {
       setError(t('authGoogleError'))
     } finally {
@@ -30,7 +32,7 @@ export function SignInPage() {
     setSubmitting(true)
     try {
       await signInWithEmail(email)
-      navigate('/verify-email')
+      navigate('/verify-email', { state: { from }, replace: true })
     } catch {
       setError(t('authEmailError'))
     } finally {
@@ -84,7 +86,9 @@ export function SignInPage() {
 
         <p className="auth-link">
           {t('noAccount')}
-          <Link to="/signup">{t('signUpLink')}</Link>
+          <Link to="/signup" state={{ from }}>
+            {t('signUpLink')}
+          </Link>
         </p>
       </div>
     </main>

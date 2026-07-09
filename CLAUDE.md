@@ -1,5 +1,8 @@
 # 薪水小偷 / On The Clock - 專案筆記
 
+> **與 Grok 的協作模式**（分工、節奏、prompt 規則）→ 見專案根目錄 **[`GROK.md`](./GROK.md)**。  
+> 本檔專注專案進度與規格；合作怎麼跑以 `GROK.md` 為準。
+
 ## 專案概念
 一款針對上班族的計時 app，讓使用者輸入薪資，在摸魚/上廁所時開始計時，停止後告訴他們「偷了多少薪水」，並換算成實物。
 
@@ -142,29 +145,25 @@
 
 ### 協作流程
 
-1. **你提出想法 / 看到問題**
-   - 簡短說明（例如「按鈕倒圓角」「顏色不搭」）
-   - 貼截圖路徑（當前狀態）
-   - 說明背景或感受
+1. **討論 + 定案**（Claude + Rowan）
+   - 分析問題、提方案、確認方向
+   - 產品 / 設計決策確認後可立即寫進 CLAUDE.md
 
-2. **我做分析 + 提方案**
-   - 讀截圖 + DESIGN.md + 代碼現況
-   - 分析問題根源
-   - 提出多個方案 + 推薦方向
-   - 給出 DESIGN.md 改動 + Cursor Prompt
+2. **我生產 Cursor Prompt**
+   - 寫清楚改哪些檔案、改什麼
+   - 不改 code，不先更新 CLAUDE.md（code 類）
 
-3. **你確認方向**
-   - 選擇最滿意的方案
-   - 或提出調整
+3. **你貼進 Cursor 測試**
+   - Cursor 實作
+   - 本機測試或 Vercel 確認
 
-4. **我更新文檔**
-   - 改 DESIGN.md
-   - 寫最終 Cursor Prompt
+4. **截圖給我確認**
+   - 我確認測試是否成功
+   - 若有問題 → 回步驟 2 修 Prompt
 
-5. **Cursor 實作 + 測試**
-   - 按 Prompt 改代碼
-   - 本機測試
-   - 截圖回報效果
+5. **確認成功 → 我才更新 CLAUDE.md**
+   - 只有 code 改動確認成功後才更新進度
+   - 設計規格同步更新 DESIGN.md
 
 ### 優點
 
@@ -1285,6 +1284,112 @@ Props: isOpen / onClose / children
 
 ---
 
+## 🗺️ User Flow 定案（2026-07-09）
+
+> 產品一句話：先讓人偷到第一筆薪水，再讓他為了跟朋友比而登入。
+
+### 三個拍板決策
+
+| # | 問題 | 決定 |
+|---|------|------|
+| 1 | 訪客能否完整摸一次魚？ | **可以。** 設薪資 → 計時 → 看結果，不必先登入 |
+| 2 | 何時強制登入？ | **社交才登。** 只有排行榜 / 朋友 / 跨裝置才擋；核心摸魚不擋 |
+| 3 | 登入成功後去哪？ | **智能導向。** 依暱稱 / 薪資 / 來源頁決定 |
+
+---
+
+### 完整 Flow
+
+**A. 訪客主流程**
+```
+打開 App
+  ├─ 無薪資 → redirect /setup → /timer → /result
+  └─ 有薪資 → /timer（直接計時）→ 停止 → /result
+                                              │
+                                              └─ 點排行榜 → 登入閘門 → /signin
+```
+
+**B. 社交登入**
+```
+點 /leaderboard（未登入）
+  → /signin?from=/leaderboard
+  → 登入成功 → 智能導向
+```
+
+**C. 回訪**
+```
+已登入       → onAuthStateChanged 保持狀態 → 智能導向
+訪客有本機資料 → 直接 /timer 或 /result（讀 localStorage）
+```
+
+---
+
+### 路由權限表
+
+| 頁面 | 路由 | 定案 | P0 需改？ |
+|------|------|------|-----------|
+| 設定薪資 | /setup | ✅ 訪客可 | 不用改 |
+| 計時 | /timer | ✅ 訪客可 | **P0 改** |
+| 結果 | /result | ✅ 訪客可 | **P0 改** |
+| 紀錄 | /history | ✅ 訪客可 | **P0 改** |
+| 戰績 | /achievement | ✅ 訪客可 | **P0 改** |
+| 排行榜 | /leaderboard | ❌ 需登入 | 維持（登入閘門） |
+| /signin /signup | — | ✅ 訪客可 | 不用改 |
+| /verify-email | — | ✅ 訪客可 | 不用改 |
+| /setup-profile | — | ❌ 需登入 | 不用改 |
+| /user-profile | — | ❌ 需登入 | 不用改 |
+
+---
+
+### 登入後智能導向（4 條件，依序判斷）
+
+| 優先 | 條件 | 去哪 |
+|------|------|------|
+| 1 | `displayName` 為空（新用戶） | `/setup-profile` |
+| 2 | 有暱稱，localStorage 無薪資 | `/setup` |
+| 3 | 有暱稱、有薪資、URL 帶 `?from=` | `from` 指定頁面 |
+| 4 | 其餘 | `/result` |
+
+---
+
+### 結果頁空狀態 CTA
+
+| 狀態 | 條件 | CTA |
+|------|------|-----|
+| 無薪資 | localStorage 無薪資 config | redirect `/setup`（不顯示空頁） |
+| 有薪資，今日無記錄 | sessions 為空 | 「開始計時」→ `/timer` |
+| 有薪資、有記錄 | 正常顯示 | — |
+
+---
+
+### Nav 抽屜（訪客狀態）
+
+- 頭像區**完全隱藏**，只顯示選單列表
+- 不顯示登入按鈕（排行榜本身就是登入閘門，不需要額外入口）
+
+---
+
+### P0 / P1 / P2
+
+**P0（下輪 Cursor 執行）**
+- 移除 /timer、/result、/history、/achievement 的 ProtectedRoute
+- 保留 /leaderboard 的 ProtectedRoute
+- 登入後智能導向（4 條件）
+- 結果頁空狀態 CTA（2 種情況）
+- Nav 抽屜訪客狀態隱藏頭像區
+
+**P1（之後）**
+- /signin 與 /signup 合併成單一入口
+- 訪客 Nav 抽屜加「登入」入口（若之後覺得需要）
+
+**P2（真排行榜上線時一起做）**
+- ⚠️ **提醒**：訪客本機紀錄 → 登入後合併到 Firebase（現在先跳過，P2 做真排行榜時再一起處理）
+- 排行榜接 Firebase 真實資料
+- 朋友邀請系統
+- Email 發信 PROD 確認
+
+---
+
 ## 📝 最新 Recap（2026-07-09）— Vercel 部署 + 電郵驗證修復進行中
 
 ### Vercel 部署（✅ 完成）
@@ -1370,22 +1475,27 @@ await setDoc(doc(db, 'mail', `${docId}-${Date.now()}`), {
 確認 import 有加上 setDoc 和 doc（已有就不用重複）。
 ```
 
-### ✅ 今日完成進度（2026-07-09 18:53）
+### ✅ 今日完成進度（2026-07-09）
 
 | 項目 | 狀態 | 說明 |
 |------|------|------|
 | Firebase Extension 安裝 | ✅ | "Trigger Email from Firestore" 安裝成功（重試後 Eventarc 權限自動通過）|
 | emailVerification.ts 加發信 | ✅ | `createEmailVerification()` 寫入 `mail` collection，觸發 Extension 發信 |
 | 推上 Vercel | ✅ | commit `3aebc1d`，Production 狀態 Ready |
+| User Flow 定案 | ✅ | 訪客主路徑 + 登入閘門 + 智能導向全部定案（見下方 User Flow 定案章節）|
+| P0 實作完成 | ✅ | App.tsx、ProtectedRoute、SignIn/Up/VerifyEmail/SetupProfile/ResultPage 全改好 |
 
 ### ❌ 尚未完成的功能（2026-07-09 現況）
 
 | 功能 | 狀態 | 說明 |
 |------|------|------|
-| Email 驗證信實測 | ⏳ 待測試 | 程式碼已推上去，**還沒用手機實際測試**收信 |
-| 排行榜 | ❌ 只有假資料 | Wireframe 已做（commit `4ea2ec6`），但沒接 Firebase 真實資料 |
-| 朋友邀請系統 | ❌ 完全沒開始 | 邀請碼生成、朋友關係建立、朋友排行榜都還沒做 |
-| Email 用戶歡迎訊息 | ⏳ 待做 | 舊用戶輸入 email 後顯示「歡迎回來」vs 新用戶「歡迎加入」（Email 測試成功後再做）|
+| P0 測試 | ⏳ 待測試 | 程式碼已改好，還沒實際跑過測試清單 |
+| 推上 Vercel | ⏳ 待推 | P0 改動還沒 push 到 v0-ui remote |
+| Email 驗證信實測 | ⏳ 待測試 | 程式碼已推，還沒手機實測收信 |
+| AuthContext bug fix | ⏳ 待做 | 用戶從 Firebase 刪除後重登會失敗（見對話記錄，Cursor Prompt 已準備好）|
+| 排行榜 | ❌ 只有假資料 | Wireframe 已做，沒接 Firebase 真實資料 |
+| 朋友邀請系統 | ❌ 完全沒開始 | P2 |
+| 本機紀錄合併 Firebase | ❌ 刻意跳過 | P2，做真排行榜時一起處理 |
 
 ### 下次開 chat 做什麼（依優先順序）
 

@@ -6,7 +6,7 @@ import { RoughButton } from '../components/RoughButton'
 import { useAppState } from '../context/AppStateContext'
 import { useCurrency } from '../context/CurrencyContext'
 import { useLanguage } from '../context/LanguageContext'
-import { formatCurrency } from '../lib/salary'
+import { formatCurrency, isScheduleComplete } from '../lib/salary'
 import { clearTodaySessions, loadLastSession, loadTodaySessions } from '../lib/storage'
 import { formatMinutesSeconds } from '../lib/time'
 
@@ -22,11 +22,17 @@ function ResultShell({ children }: { children: ReactNode }) {
 export function ResultPage() {
   const { t, language } = useLanguage()
   const { symbol } = useCurrency()
-  const { lastSession, startTimer, setLastSession } = useAppState()
+  const { lastSession, startTimer, setLastSession, salaryConfig } = useAppState()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<'session' | 'today'>('session')
   const [copied, setCopied] = useState(false)
   const [todayRecords, setTodayRecords] = useState(() => loadTodaySessions())
+
+  useEffect(() => {
+    if (!(salaryConfig.amount > 0 && isScheduleComplete(salaryConfig))) {
+      navigate('/setup', { replace: true })
+    }
+  }, [salaryConfig, navigate])
 
   useEffect(() => {
     setTodayRecords(loadTodaySessions())

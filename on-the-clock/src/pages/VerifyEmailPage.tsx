@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useLanguage } from '../context/LanguageContext'
 import { getDevVerificationCode } from '../lib/emailVerification'
@@ -10,6 +10,8 @@ export function VerifyEmailPage() {
   const { t } = useLanguage()
   const { pendingEmail, verifyEmailCode, signInWithEmail } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const from = (location.state as { from?: string } | null)?.from
   const [digits, setDigits] = useState<string[]>(Array(CODE_LENGTH).fill(''))
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -20,9 +22,9 @@ export function VerifyEmailPage() {
 
   useEffect(() => {
     if (!pendingEmail) {
-      navigate('/signin', { replace: true })
+      navigate('/signin', { replace: true, state: { from } })
     }
-  }, [pendingEmail, navigate])
+  }, [pendingEmail, navigate, from])
 
   useEffect(() => {
     inputRefs.current[0]?.focus()
@@ -79,7 +81,7 @@ export function VerifyEmailPage() {
     setSubmitting(true)
     try {
       await verifyEmailCode(code)
-      navigate('/setup-profile')
+      navigate('/setup-profile', { state: { from }, replace: true })
     } catch (error) {
       const message = error instanceof Error ? error.message : ''
       if (
