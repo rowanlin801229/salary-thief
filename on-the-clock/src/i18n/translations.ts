@@ -138,6 +138,10 @@ type LabelKey =
   | 'profileSignOut'
   | 'userMenuFallback'
   | 'navDrawerTitle'
+  | 'leaderboard'
+  | 'leaderboardTitle'
+  | 'leaderboardYou'
+  | 'leaderboardEmpty'
 
 export const labelColors: string[] = ['#000000', '#000000', '#000000', '#000000', '#000000']
 
@@ -281,7 +285,11 @@ export const translations: Record<Language, Record<LabelKey, string>> = {
     profileSave: 'Save',
     profileSignOut: 'Sign out',
     userMenuFallback: 'User',
-    navDrawerTitle: 'Menu'
+    navDrawerTitle: 'Menu',
+    leaderboard: 'Leaderboard',
+    leaderboardTitle: 'Monthly Leaderboard',
+    leaderboardYou: '(You)',
+    leaderboardEmpty: 'No records this month'
   },
   zh: {
     appTitle: '薪水小偷',
@@ -420,6 +428,10 @@ export const translations: Record<Language, Record<LabelKey, string>> = {
     profileSave: '儲存',
     profileSignOut: '登出',
     userMenuFallback: '用戶',
-    navDrawerTitle: '選單'
+    navDrawerTitle: '選單',
+    leaderboard: '排行榜',
+    leaderboardTitle: '本月排行榜',
+    leaderboardYou: '（你）',
+    leaderboardEmpty: '本月還沒有紀錄'
   }
 }

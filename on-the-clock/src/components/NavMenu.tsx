@@ -10,6 +10,7 @@ const navItems = [
   { to: '/result', labelKey: 'result' },
   { to: '/history', labelKey: 'history' },
   { to: '/achievement', labelKey: 'achievement' },
+  { to: '/leaderboard', labelKey: 'leaderboard' },
 ] as const
 
 function MenuIcon() {

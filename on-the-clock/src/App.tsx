@@ -8,6 +8,7 @@ import { LanguageProvider } from './context/LanguageContext'
 import { AppLayout } from './layout/AppLayout'
 import { AchievementPage } from './pages/AchievementPage'
 import { HistoryPage } from './pages/HistoryPage'
+import { LeaderboardPage } from './pages/LeaderboardPage'
 import { SignInPage } from './pages/SignInPage'
 import { SignUpPage } from './pages/SignUpPage'
 import { ResultPage } from './pages/ResultPage'
@@ -85,6 +86,14 @@ function App() {
                       element={
                         <ProtectedRoute>
                           <AchievementPage />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/leaderboard"
+                      element={
+                        <ProtectedRoute>
+                          <LeaderboardPage />
                         </ProtectedRoute>
                       }
                     />
