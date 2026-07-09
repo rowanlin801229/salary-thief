@@ -87,6 +87,14 @@ export async function createEmailVerification(
     throw new Error('verification_save_failed')
   }
 
+  await setDoc(doc(db, 'mail', `${docId}-${Date.now()}`), {
+    to: normalized,
+    message: {
+      subject: '薪水小偷驗證碼 / On The Clock Verification Code',
+      text: `您的驗證碼是：${code}，10 分鐘內有效。\nYour verification code is: ${code}, valid for 10 minutes.`,
+    },
+  })
+
   setPendingEmail(normalized)
 
   if (import.meta.env.DEV) {

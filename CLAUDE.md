@@ -1283,3 +1283,108 @@ Props: isOpen / onClose / children
 
 「上次討論完排行榜設計，所有決策已定，下一步是寫 Cursor Prompt 實作 Wireframe。」
 
+---
+
+## 📝 最新 Recap（2026-07-09）— Vercel 部署 + 電郵驗證修復進行中
+
+### Vercel 部署（✅ 完成）
+
+**兩個 GitHub Remote：**
+- `origin` → `git@github.com:rowanlin801229/salary-thief.git`（主開發 repo）
+- `v0-ui` → `https://github.com/rowanlin801229/salary-thief-ui.git`（Vercel 連接的 repo）
+
+**Vercel 設定：**
+- 項目連到 `salary-thief-ui.git`，監控 `main` branch
+- Root Directory：`on-the-clock`（必填，否則 404）
+- 部署網址：`salary-thief-ui.vercel.app`（主要） + `on-the-clock-app.vercel.app`（別名）
+
+**已部署的 commit：**
+- `baae4ca`（nav drawer）
+- `4ea2ec6`（leaderboard wireframe）
+
+**推送 Vercel 指令：**
+```bash
+cd /Users/linyuxian/Desktop/薪水小偷/on-the-clock
+git push v0-ui main
+# 若 push 失敗（HTTP 400 大檔案）先設：
+git config http.postBuffer 524288000
+```
+
+### Firebase 更新（✅）
+
+- **升級 Blaze 計費方案**（Cloud Functions 必須，每月 $0 起跑）
+- **新增授權網域**：`on-the-clock-app.vercel.app` 加入 Firebase 授權網域
+  - 路徑：Firebase Console → Authentication → Settings → Authorized domains
+
+### Email 驗證問題（🔄 修復進行中）
+
+**根本問題：**
+`emailVerification.ts` 的 `createEmailVerification()` 只寫 Firestore，沒有任何發信邏輯。
+- DEV 模式：驗證碼存 sessionStorage（可以看到）
+- PROD 模式：驗證碼存進 Firestore 然後就消失了，**用戶永遠收不到信**
+
+**解決方案：Firebase "Trigger Email from Firestore" Extension**
+- 監聽 `mail` collection，自動透過 SMTP 發信
+- Extension 已安裝（有錯誤，見下方）
+
+**SMTP 設定：**
+- 發信帳號：`rowanlin1124@gmail.com`
+- SMTP URI：`smtps://rowanlin1124%40gmail.com@smtp.gmail.com:465`
+- App Password 名稱：`on-the-clock`（用戶自行保管密碼）
+- Firestore 位置：`asia-east1`（台灣）
+- Cloud Functions 位置：`us-central1`
+
+**Extension 安裝狀態：⚠️ 有錯誤**
+- 錯誤訊息：「安裝擴充功能時發生錯誤。請注意，參數設定錯誤可能會導致部分擴充功能資源無法順利部署。」
+- 疑似原因：Default FROM address 驗證問題
+- 待辦：點「查看詳細資料」確認錯誤原因，或重新設定 Extension
+
+**Extension 修好後，需要改 emailVerification.ts：**
+
+在 `createEmailVerification()` 的 `setPendingEmail(normalized)` 之前，加入寫入 `mail` collection 的程式碼：
+
+```typescript
+// 寫進 mail collection，觸發 Firebase Extension 發信
+await setDoc(doc(db, 'mail', `${docId}-${Date.now()}`), {
+  to: normalized,
+  message: {
+    subject: '薪水小偷驗證碼 / On The Clock Verification Code',
+    text: `您的驗證碼是：${code}，10 分鐘內有效。\nYour verification code is: ${code}, valid for 10 minutes.`,
+  },
+})
+```
+
+**Cursor Prompt（Extension 修好後使用）：**
+```
+在 src/lib/emailVerification.ts 的 createEmailVerification() 函數裡，
+在 setPendingEmail(normalized) 之前，加入以下程式碼，觸發 Firebase Trigger Email Extension 發信：
+
+await setDoc(doc(db, 'mail', `${docId}-${Date.now()}`), {
+  to: normalized,
+  message: {
+    subject: '薪水小偷驗證碼 / On The Clock Verification Code',
+    text: `您的驗證碼是：${code}，10 分鐘內有效。\nYour verification code is: ${code}, valid for 10 minutes.`,
+  },
+})
+
+確認 import 有加上 setDoc 和 doc（已有就不用重複）。
+```
+
+### ❌ 尚未完成的功能（2026-07-09 現況）
+
+| 功能 | 狀態 | 說明 |
+|------|------|------|
+| Email 驗證信 | ❌ 沒有發信 | Extension 有 Eventarc 權限錯誤，emailVerification.ts 也還沒加寫 `mail` collection 的程式碼 |
+| 排行榜 | ❌ 只有假資料 | Wireframe 已做，但沒接 Firebase 真實資料 |
+| 朋友邀請系統 | ❌ 完全沒開始 | 邀請碼生成、朋友關係建立、朋友排行榜都還沒做 |
+| Email 用戶歡迎訊息 | ⏳ 待做 | 舊用戶輸入 email 後顯示「歡迎回來」vs 新用戶「歡迎加入」（Email 發信修好後再做）|
+
+### 下次行動清單（依優先順序）
+
+1. **Fix Extension 錯誤** — Firebase Console → Extensions → 點「重試安裝作業」；若仍失敗，去 GCP IAM 補 Eventarc Service Agent 權限
+2. **Cursor 加發信邏輯** — 用上面的 Prompt，修改 emailVerification.ts（寫入 `mail` collection）
+3. **Push Vercel** — `git push v0-ui main`
+4. **手機測試 Email 驗證** — 確認真的收到驗證碼信
+5. **排行榜接 Firebase** — 把假資料換成真實 Firestore 資料
+6. **朋友邀請系統** — 邀請碼生成 + 朋友排行榜
+
