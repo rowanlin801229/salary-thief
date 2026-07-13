@@ -3731,3 +3731,206 @@ input:focus-visible,
   height: 36px;
   font-size: 14px;
 }
+
+/* ===== Share card ===== */
+.share-card {
+  background: #fff;
+  border: 2px solid #111;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+.share-card-app-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+}
+
+.share-card-cat {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+}
+
+.share-card-amount {
+  font-family: 'Caveat', cursive;
+  font-size: 52px;
+  font-weight: 700;
+  color: #e63946;
+  margin: 0;
+  line-height: 1;
+}
+
+.share-card-label {
+  font-size: 15px;
+  color: #666;
+  margin: 0;
+}
+
+.share-card-time {
+  font-family: 'Courier Prime', monospace;
+  font-size: 22px;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+}
+
+.share-card-tagline {
+  font-size: 13px;
+  color: #666;
+  text-align: center;
+  padding: 0 16px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ===== Share sheet ===== */
+.share-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 300;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s;
+}
+.share-sheet-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* 手機：bottom sheet */
+.share-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 2px solid #111;
+  border-radius: 16px 16px 0 0;
+  z-index: 310;
+  transform: translateY(100%);
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear 0.3s;
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+  max-height: 92vh;
+  overflow-y: auto;
+}
+.share-sheet.is-open {
+  transform: translateY(0);
+  visibility: visible;
+  pointer-events: auto;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s;
+}
+
+/* 桌機 fallback：置中 modal */
+@media (min-width: 640px) {
+  .share-sheet {
+    top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    width: 440px;
+    border-radius: 12px;
+    border: 2px solid #111;
+    transform: translate(-50%, -46%);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s, visibility 0s linear 0.25s;
+    max-height: 90vh;
+  }
+  .share-sheet.is-open {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 0.25s, transform 0.25s, visibility 0s;
+  }
+}
+
+.share-sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: #ccc;
+  border-radius: 2px;
+  margin: 12px auto 0;
+}
+@media (min-width: 640px) {
+  .share-sheet-handle {
+    display: none;
+  }
+}
+
+.share-sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px 8px;
+  border-bottom: 1px solid #e5e5e5;
+}
+.share-sheet-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111;
+}
+.share-sheet-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: #111;
+  padding: 4px 8px;
+  line-height: 1;
+}
+.share-sheet-close:hover {
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
+/* 預覽區：外層縮放，不影響截圖 */
+.share-sheet-preview {
+  display: flex;
+  justify-content: center;
+  padding: 20px 16px;
+  overflow: hidden;
+}
+.share-sheet-preview-scale {
+  transform: scale(0.82);
+  transform-origin: top center;
+  /* 此 wrapper 縮放，children（cardRef 所在）本體 1:1 */
+}
+
+.share-sheet-actions {
+  display: flex;
+  gap: 12px;
+  padding: 8px 20px 20px;
+}
+.share-sheet-btn {
+  flex: 1;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  border: 2px solid #111;
+  border-radius: 6px;
+  background: none;
+  color: #111;
+  cursor: pointer;
+}
+.share-sheet-btn:hover {
+  background: #f0f0f0;
+}
+.share-sheet-btn.is-primary {
+  background: #111;
+  color: #fff;
+}
+.share-sheet-btn.is-primary:hover {
+  background: #333;
+}

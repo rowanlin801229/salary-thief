@@ -1,8 +1,11 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { toPng } from 'html-to-image'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { DoodleMarks } from '../components/DoodleMarks'
 import { RoughBox } from '../components/RoughBox'
 import { RoughButton } from '../components/RoughButton'
+import { ShareCard } from '../components/ShareCard'
+import { ShareSheet } from '../components/ShareSheet'
 import { useAppState } from '../context/AppStateContext'
 import { useAuth } from '../context/AuthContext'
 import { useCurrency } from '../context/CurrencyContext'
@@ -29,7 +32,9 @@ export function ResultPage() {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<'session' | 'today'>('session')
   const [copied, setCopied] = useState(false)
+  const [sheetOpen, setSheetOpen] = useState(false)
   const [todayRecords, setTodayRecords] = useState(() => loadTodaySessions())
+  const cardRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!(salaryConfig.amount > 0 && isScheduleComplete(salaryConfig))) {
@@ -67,10 +72,32 @@ export function ResultPage() {
 
   const shareText =
     language === 'zh'
-      ? `我今天摸魚 ${formatCurrency(symbol, totalAmount)}！`
-      : `I slacked off for ${formatCurrency(symbol, totalAmount)} today!`
+      ? `我剛剛摸魚 ${formatCurrency(symbol, session?.stolenAmount ?? 0)}（${formatMinutesSeconds(session?.elapsedMs ?? 0)}）！`
+      : `I just slacked off for ${formatCurrency(symbol, session?.stolenAmount ?? 0)} (${formatMinutesSeconds(session?.elapsedMs ?? 0)})!`
 
-  const handleShare = async () => {
+  const handleShare = () => {
+    setSheetOpen(true)
+  }
+
+  const handleDownload = async () => {
+    if (!cardRef.current) return
+    try {
+      await document.fonts.ready
+      const dataUrl = await toPng(cardRef.current, {
+        pixelRatio: 2,
+        width: 375,
+        height: 520,
+      })
+      const link = document.createElement('a')
+      link.download = language === 'zh' ? '薪水小偷戰績.png' : 'on-the-clock-result.png'
+      link.href = dataUrl
+      link.click()
+    } catch (err) {
+      console.error('[ShareCard] Download failed:', err)
+    }
+  }
+
+  const handleCopyText = async () => {
     try {
       await navigator.clipboard.writeText(shareText)
       setCopied(true)
@@ -279,6 +306,48 @@ export function ResultPage() {
           </div>
         )}
       </div>
+
+      {/* 截圖用隱藏 div（1:1，無 scale，脫離 sheet DOM） */}
+      {session && (
+        <div
+          ref={cardRef}
+          style={{
+            position: 'fixed',
+            left: '-9999px',
+            top: '-9999px',
+            width: '375px',
+            height: '520px',
+            overflow: 'hidden',
+            pointerEvents: 'none',
+          }}
+          aria-hidden
+        >
+          <ShareCard
+            amount={session.stolenAmount}
+            elapsedMs={session.elapsedMs}
+            symbol={symbol}
+            language={language}
+          />
+        </div>
+      )}
+
+      <ShareSheet
+        isOpen={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        onDownload={handleDownload}
+        onCopyText={handleCopyText}
+        copied={copied}
+        language={language}
+      >
+        {session && (
+          <ShareCard
+            amount={session.stolenAmount}
+            elapsedMs={session.elapsedMs}
+            symbol={symbol}
+            language={language}
+          />
+        )}
+      </ShareSheet>
     </ResultShell>
   )
 }
