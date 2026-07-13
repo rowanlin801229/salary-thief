@@ -1,22 +1,10 @@
+import { useEffect, useState } from 'react'
+import { useAuth } from '../context/AuthContext'
 import { useLanguage } from '../context/LanguageContext'
+import { backfillLocalStorageSessions } from '../lib/firestore-session'
+import { fetchMonthlyLeaderboard, type LeaderboardEntry } from '../lib/leaderboard'
+import { loadMonthlyHistory, yearMonthFromDate } from '../lib/storage'
 import type { Language } from '../types'
-
-interface LeaderboardEntry {
-  uid: string
-  displayName: string
-  photoURL: string
-  totalMinutes: number
-  isCurrentUser: boolean
-}
-
-const FAKE_DATA: LeaderboardEntry[] = [
-  { uid: '1', displayName: '小明', photoURL: '', totalMinutes: 108, isCurrentUser: false },
-  { uid: '2', displayName: '阿花', photoURL: '', totalMinutes: 95, isCurrentUser: false },
-  { uid: '3', displayName: '大雄', photoURL: '', totalMinutes: 83, isCurrentUser: false },
-  { uid: '4', displayName: 'Rowan', photoURL: '', totalMinutes: 67, isCurrentUser: true },
-  { uid: '5', displayName: '靜香', photoURL: '', totalMinutes: 45, isCurrentUser: false },
-  { uid: '6', displayName: '技安', photoURL: '', totalMinutes: 32, isCurrentUser: false },
-]
 
 function formatLeaderboardTime(totalMinutes: number): string {
   const hours = Math.floor(totalMinutes / 60)
@@ -58,8 +46,59 @@ function Avatar({
 
 export function LeaderboardPage() {
   const { t, language } = useLanguage()
+  const { user } = useAuth()
 
-  const ranked = [...FAKE_DATA].sort((a, b) => b.totalMinutes - a.totalMinutes)
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // 進頁：保底 backfill → 讀排行榜（await 順序，禁止平行 race）
+  useEffect(() => {
+    let isMounted = true
+
+    const init = async () => {
+      try {
+        setError(null)
+
+        if (user) {
+          const currentMonth = yearMonthFromDate()
+          const monthlyLocal = loadMonthlyHistory(currentMonth)
+          if (monthlyLocal.length > 0) {
+            await backfillLocalStorageSessions(user.uid, monthlyLocal)
+          }
+        }
+
+        const data = await fetchMonthlyLeaderboard(user?.uid)
+        if (isMounted) setLeaderboard(data)
+      } catch (err) {
+        console.error('[LeaderboardPage] init error:', err)
+        if (isMounted) setError(t('leaderboardError') || 'Failed to load leaderboard')
+      } finally {
+        if (isMounted) setLoading(false)
+      }
+    }
+
+    init()
+    return () => {
+      isMounted = false
+    }
+  }, [user, t])
+
+  // 5 分鐘自動刷新（不 setLoading，不閃）
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const data = await fetchMonthlyLeaderboard(user?.uid)
+        setLeaderboard(data)
+      } catch (err) {
+        console.error('[LeaderboardPage] Auto-refresh error:', err)
+      }
+    }, 5 * 60 * 1000)
+
+    return () => clearInterval(interval)
+  }, [user?.uid])
+
+  const ranked = leaderboard
   const topThree = ranked.slice(0, 3)
   const rest = ranked.slice(3)
 
@@ -80,9 +119,17 @@ export function LeaderboardPage() {
         <p className="leaderboard-month">{formatLeaderboardMonth(language)}</p>
       </header>
 
-      {ranked.length === 0 ? (
-        <p className="leaderboard-empty">{t('leaderboardEmpty')}</p>
-      ) : (
+      {loading && (
+        <p className="leaderboard-loading">{t('leaderboardLoading') || 'Loading...'}</p>
+      )}
+
+      {error && !loading && <p className="leaderboard-error">{error}</p>}
+
+      {!loading && !error && ranked.length === 0 && (
+        <p className="leaderboard-empty">{t('leaderboardEmpty') || 'No one here yet'}</p>
+      )}
+
+      {!loading && !error && ranked.length > 0 && (
         <>
           <section className="leaderboard-podium" aria-label={t('leaderboardTitle')}>
             {podiumSlots.map(({ place, entry, heightClass }) => {

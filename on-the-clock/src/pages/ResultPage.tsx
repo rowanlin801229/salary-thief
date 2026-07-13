@@ -4,8 +4,10 @@ import { DoodleMarks } from '../components/DoodleMarks'
 import { RoughBox } from '../components/RoughBox'
 import { RoughButton } from '../components/RoughButton'
 import { useAppState } from '../context/AppStateContext'
+import { useAuth } from '../context/AuthContext'
 import { useCurrency } from '../context/CurrencyContext'
 import { useLanguage } from '../context/LanguageContext'
+import { saveSessionToFirebase } from '../lib/firestore-session'
 import { formatCurrency, isScheduleComplete } from '../lib/salary'
 import { clearTodaySessions, loadLastSession, loadTodaySessions } from '../lib/storage'
 import { formatMinutesSeconds } from '../lib/time'
@@ -23,6 +25,7 @@ export function ResultPage() {
   const { t, language } = useLanguage()
   const { symbol } = useCurrency()
   const { lastSession, startTimer, setLastSession, salaryConfig } = useAppState()
+  const { user } = useAuth()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<'session' | 'today'>('session')
   const [copied, setCopied] = useState(false)
@@ -36,7 +39,13 @@ export function ResultPage() {
 
   useEffect(() => {
     setTodayRecords(loadTodaySessions())
-  }, [lastSession])
+
+    if (user && lastSession) {
+      saveSessionToFirebase(user.uid, lastSession).catch((err) => {
+        console.error('[ResultPage] Failed to save session to Firebase:', err)
+      })
+    }
+  }, [lastSession, user])
 
   const session = useMemo(
     () => lastSession ?? loadLastSession() ?? todayRecords[0] ?? null,

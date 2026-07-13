@@ -4,8 +4,10 @@ import { AvatarEditor } from '../components/AvatarEditor'
 import { useAppState } from '../context/AppStateContext'
 import { useAuth } from '../context/AuthContext'
 import { useLanguage } from '../context/LanguageContext'
+import { backfillLocalStorageSessions } from '../lib/firestore-session'
 import { uploadProfileImage } from '../lib/imageUpload'
 import { isScheduleComplete } from '../lib/salary'
+import { loadMonthlyHistory, yearMonthFromDate } from '../lib/storage'
 import type { SalaryConfig } from '../types'
 
 function getDestination(salaryConfig: SalaryConfig, from?: string): string {
@@ -90,6 +92,16 @@ export function SetupProfilePage() {
     setSubmitting(true)
     try {
       await updateUserProfile(trimmed, pendingPhotoDataUrl ?? undefined)
+
+      // Backfill 本月 localStorage（失敗不擋）
+      const currentMonth = yearMonthFromDate()
+      const monthlyLocal = loadMonthlyHistory(currentMonth)
+      if (monthlyLocal.length > 0 && user) {
+        await backfillLocalStorageSessions(user.uid, monthlyLocal).catch((err) =>
+          console.error('[SetupProfile] Backfill failed:', err)
+        )
+      }
+
       navigate(getDestination(salaryConfig, from))
     } catch {
       setError(t('profileSaveError'))

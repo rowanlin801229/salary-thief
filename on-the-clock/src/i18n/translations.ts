@@ -142,6 +142,8 @@ type LabelKey =
   | 'leaderboardTitle'
   | 'leaderboardYou'
   | 'leaderboardEmpty'
+  | 'leaderboardLoading'
+  | 'leaderboardError'
 
 export const labelColors: string[] = ['#000000', '#000000', '#000000', '#000000', '#000000']
 
@@ -289,7 +291,9 @@ export const translations: Record<Language, Record<LabelKey, string>> = {
     leaderboard: 'Leaderboard',
     leaderboardTitle: 'Monthly Leaderboard',
     leaderboardYou: '(You)',
-    leaderboardEmpty: 'No records this month'
+    leaderboardEmpty: 'No one here yet — go slack off!',
+    leaderboardLoading: 'Loading...',
+    leaderboardError: 'Failed to load leaderboard'
   },
   zh: {
     appTitle: '薪水小偷',
@@ -432,6 +436,8 @@ export const translations: Record<Language, Record<LabelKey, string>> = {
     leaderboard: '排行榜',
     leaderboardTitle: '本月排行榜',
     leaderboardYou: '（你）',
-    leaderboardEmpty: '本月還沒有紀錄'
+    leaderboardEmpty: '還沒有人上榜，快去摸魚！',
+    leaderboardLoading: '載入中...',
+    leaderboardError: '排行榜載入失敗'
   }
 }

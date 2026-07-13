@@ -34,7 +34,7 @@ function CloseIcon() {
 
 export function NavMenu() {
   const { t, language } = useLanguage()
-  const { user, profile } = useAuth()
+  const { user, profile, signOut } = useAuth()
   const [open, setOpen] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
@@ -76,23 +76,36 @@ export function NavMenu() {
 
         {user && (
           <>
-            <button
-              type="button"
-              className="nav-drawer-user"
-              onClick={() => {
-                setOpen(false)
-                navigate('/user-profile')
-              }}
-            >
-              {photoURL ? (
-                <img className="nav-drawer-avatar" src={photoURL} alt="" />
-              ) : (
-                <span className="nav-drawer-avatar nav-drawer-avatar-fallback">
-                  {displayName.slice(0, 1).toUpperCase()}
-                </span>
-              )}
-              <span className="nav-drawer-user-name">{displayName}</span>
-            </button>
+            <div className="nav-drawer-user-row">
+              <button
+                type="button"
+                className="nav-drawer-user"
+                onClick={() => {
+                  setOpen(false)
+                  navigate('/user-profile')
+                }}
+              >
+                {photoURL ? (
+                  <img className="nav-drawer-avatar" src={photoURL} alt="" />
+                ) : (
+                  <span className="nav-drawer-avatar nav-drawer-avatar-fallback">
+                    {displayName.slice(0, 1).toUpperCase()}
+                  </span>
+                )}
+                <span className="nav-drawer-user-name">{displayName}</span>
+              </button>
+              <button
+                type="button"
+                className="nav-drawer-signout"
+                onClick={async () => {
+                  setOpen(false)
+                  await signOut()
+                  navigate('/signin')
+                }}
+              >
+                {language === 'zh' ? '登出' : 'Sign out'}
+              </button>
+            </div>
             <div className="nav-drawer-divider" />
           </>
         )}
@@ -116,6 +129,31 @@ export function NavMenu() {
             ))}
           </ul>
         </nav>
+
+        {!user && (
+          <div className="nav-drawer-auth-cta">
+            <button
+              type="button"
+              className="nav-drawer-auth-btn is-primary"
+              onClick={() => {
+                setOpen(false)
+                navigate('/signin')
+              }}
+            >
+              {language === 'zh' ? '登入' : 'Sign in'}
+            </button>
+            <button
+              type="button"
+              className="nav-drawer-auth-btn"
+              onClick={() => {
+                setOpen(false)
+                navigate('/signup')
+              }}
+            >
+              {language === 'zh' ? '註冊' : 'Sign up'}
+            </button>
+          </div>
+        )}
       </NavDrawer>
     </div>
   )
