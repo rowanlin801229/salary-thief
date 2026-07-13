@@ -132,22 +132,29 @@ export function LeaderboardPage() {
       {!loading && !error && ranked.length > 0 && (
         <>
           <section className="leaderboard-podium" aria-label={t('leaderboardTitle')}>
-            {podiumSlots.map(({ place, entry, heightClass }) => {
-              if (!entry) return null
-              return (
-                <div key={entry.uid} className={`leaderboard-podium-slot ${heightClass}`}>
-                  <Avatar entry={entry} />
-                  <p className="leaderboard-podium-name">
-                    {entry.displayName}
-                    {entry.isCurrentUser ? ` ${t('leaderboardYou')}` : ''}
-                  </p>
-                  <p className="leaderboard-podium-time">{formatLeaderboardTime(entry.totalMinutes)}</p>
-                  <div className={`leaderboard-step ${heightClass}`} aria-hidden="true">
-                    <span className="leaderboard-step-rank">{place}</span>
-                  </div>
+            {podiumSlots.map(({ place, entry, heightClass }) => (
+              <div key={place} className={`leaderboard-podium-slot ${heightClass}`}>
+                {entry ? (
+                  <>
+                    <Avatar entry={entry} />
+                    <p className="leaderboard-podium-name">
+                      {entry.displayName}
+                      {entry.isCurrentUser ? ` ${t('leaderboardYou')}` : ''}
+                    </p>
+                    <p className="leaderboard-podium-time">{formatLeaderboardTime(entry.totalMinutes)}</p>
+                  </>
+                ) : (
+                  <>
+                    <span className="leaderboard-avatar leaderboard-avatar-empty" aria-hidden="true" />
+                    <p className="leaderboard-podium-name leaderboard-empty-slot">—</p>
+                    <p className="leaderboard-podium-time leaderboard-empty-slot">—</p>
+                  </>
+                )}
+                <div className={`leaderboard-step ${heightClass}`} aria-hidden="true">
+                  <span className="leaderboard-step-rank">{place}</span>
                 </div>
-              )
-            })}
+              </div>
+            ))}
           </section>
 
           <div className="leaderboard-divider" />
