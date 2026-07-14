@@ -1,4 +1,4 @@
-import { toPng } from 'html-to-image'
+import { toBlob } from 'html-to-image'
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { DoodleMarks } from '../components/DoodleMarks'
@@ -81,18 +81,56 @@ export function ResultPage() {
 
   const handleDownload = async () => {
     if (!cardRef.current) return
+
+    const fileName = language === 'zh' ? '薪水小偷戰績.png' : 'on-the-clock-result.png'
+    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+    const canNativeShare = typeof navigator.canShare === 'function' && window.isSecureContext
+
+    // On mobile without secure-context share, pre-open a tab now to keep the
+    // user gesture valid (iOS blocks window.open after an await).
+    let preOpened: Window | null = null
+    if (!canNativeShare && isMobile) {
+      preOpened = window.open('', '_blank')
+    }
+
     try {
       await document.fonts.ready
-      const dataUrl = await toPng(cardRef.current, {
+      const blob = await toBlob(cardRef.current, {
         pixelRatio: 2,
         width: 375,
         height: 520,
       })
-      const link = document.createElement('a')
-      link.download = language === 'zh' ? '薪水小偷戰績.png' : 'on-the-clock-result.png'
-      link.href = dataUrl
-      link.click()
+      if (!blob) throw new Error('Failed to render image')
+
+      const file = new File([blob], fileName, { type: 'image/png' })
+
+      // Mobile (HTTPS): native share sheet (Save to Photos / share to apps)
+      if (canNativeShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file] })
+          return
+        } catch (shareErr) {
+          if (shareErr instanceof Error && shareErr.name === 'AbortError') return
+          // otherwise fall through
+        }
+      }
+
+      const url = URL.createObjectURL(blob)
+      if (preOpened) {
+        // Mobile fallback: show image in the pre-opened tab → long-press to save
+        preOpened.location.href = url
+      } else if (isMobile) {
+        window.open(url, '_blank')
+      } else {
+        // Desktop: direct download
+        const link = document.createElement('a')
+        link.download = fileName
+        link.href = url
+        link.click()
+      }
+      setTimeout(() => URL.revokeObjectURL(url), 30000)
     } catch (err) {
+      if (preOpened) preOpened.close()
       console.error('[ShareCard] Download failed:', err)
     }
   }

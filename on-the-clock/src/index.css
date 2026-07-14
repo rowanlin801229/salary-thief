@@ -3899,19 +3899,20 @@ input:focus-visible,
 .share-sheet-preview {
   display: flex;
   justify-content: center;
-  padding: 20px 16px;
+  padding: 14px 16px 0;
   overflow: hidden;
 }
 .share-sheet-preview-scale {
   transform: scale(0.82);
   transform-origin: top center;
-  /* 此 wrapper 縮放，children（cardRef 所在）本體 1:1 */
+  /* 縮放不會縮小版面高度，用負 margin 補回省下的高度讓按鈕靠近卡片 */
+  margin-bottom: -94px;
 }
 
 .share-sheet-actions {
   display: flex;
   gap: 12px;
-  padding: 8px 20px 20px;
+  padding: 12px 20px 20px;
 }
 .share-sheet-btn {
   flex: 1;
