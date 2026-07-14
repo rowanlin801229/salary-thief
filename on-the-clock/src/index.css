@@ -1059,16 +1059,16 @@ button {
 
 .setup-cat-bubble {
   position: absolute;
-  top: 14px;
-  right: 2px;
-  transform: rotate(4deg);
+  top: -6px;
+  left: 0;
+  transform: rotate(-4deg);
   font-family: var(--font-display, 'Caveat', cursive);
   font-size: clamp(18px, 5.5vw, 24px);
   line-height: 1.05;
   color: var(--fg);
   background: var(--bg);
   border: 2.5px solid var(--fg);
-  border-radius: 16px 16px 16px 4px;
+  border-radius: 16px 16px 4px 16px;
   padding: 6px 10px;
   max-width: 44%;
   text-align: center;
