@@ -3979,3 +3979,19 @@ input:focus-visible,
 .share-sheet-btn.is-primary:hover {
   background: #333;
 }
+
+.inapp-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: #111;
+  color: #fff;
+  text-align: center;
+  font-family: 'Courier Prime', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 16px;
+  line-height: 1.5;
+}

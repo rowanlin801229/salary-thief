@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { GuestRoute, ProtectedRoute } from './components/ProtectedRoute'
 import { AppStateProvider } from './context/AppStateContext'
@@ -19,7 +20,33 @@ import { UserProfilePage } from './pages/UserProfilePage'
 import { VerifyEmailPage } from './pages/VerifyEmailPage'
 
 function App() {
+  const [isInApp, setIsInApp] = useState(false)
+  useEffect(() => {
+    const ua = navigator.userAgent
+
+    // LINE：自動加參數讓 LINE 用外部瀏覽器開啟
+    if (/Line\//i.test(ua)) {
+      const url = new URL(window.location.href)
+      if (!url.searchParams.get('openExternalBrowser')) {
+        url.searchParams.set('openExternalBrowser', '1')
+        window.location.replace(url.toString())
+      }
+      return
+    }
+
+    // 其他 in-app browser（FB、IG）：顯示提示 banner
+    if (/FBAN|FBAV|Instagram|MicroMessenger/i.test(ua)) {
+      setIsInApp(true)
+    }
+  }, [])
+
   return (
+    <>
+      {isInApp && (
+        <div className="inapp-banner">
+          請用 Safari 或 Chrome 開啟，才能使用 Google 登入
+        </div>
+      )}
     <LanguageProvider>
       <CurrencyProvider>
         <AppStateProvider>
@@ -86,6 +113,7 @@ function App() {
         </AppStateProvider>
       </CurrencyProvider>
     </LanguageProvider>
+    </>
   )
 }
 
