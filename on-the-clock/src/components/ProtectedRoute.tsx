@@ -10,10 +10,10 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children, requireProfile = true }: ProtectedRouteProps) {
-  const { user, loading, profileComplete } = useAuth()
+  const { user, loading, profileLoading, profileComplete } = useAuth()
   const location = useLocation()
 
-  if (loading) {
+  if (loading || profileLoading) {
     return (
       <main className="auth-page">
         <p className="auth-loading">Loading…</p>
@@ -33,12 +33,12 @@ export function ProtectedRoute({ children, requireProfile = true }: ProtectedRou
 }
 
 export function GuestRoute({ children }: { children: ReactNode }) {
-  const { user, loading, profileComplete } = useAuth()
+  const { user, loading, profileLoading, profileComplete } = useAuth()
   const { salaryConfig } = useAppState()
   const location = useLocation()
   const from = (location.state as { from?: string } | null)?.from
 
-  if (loading) {
+  if (loading || profileLoading) {
     return (
       <main className="auth-page">
         <p className="auth-loading">Loading…</p>

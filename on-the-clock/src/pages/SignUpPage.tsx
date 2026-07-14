@@ -3,14 +3,17 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { AuthLangSwitcher } from '../components/AuthLangSwitcher'
 import { useAuth } from '../context/AuthContext'
 import { useLanguage } from '../context/LanguageContext'
+import { checkEmailRegistered } from '../lib/emailVerification'
 
 export function SignUpPage() {
   const { t } = useLanguage()
   const { signInWithGoogle, signInWithEmail } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const from = (location.state as { from?: string } | null)?.from
-  const [email, setEmail] = useState('')
+  const locationState = location.state as { from?: string; prefillEmail?: string } | null
+  const from = locationState?.from
+  const prefillEmail = locationState?.prefillEmail
+  const [email, setEmail] = useState(prefillEmail ?? '')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
@@ -31,6 +34,15 @@ export function SignUpPage() {
     setError(null)
     setSubmitting(true)
     try {
+      const registered = await checkEmailRegistered(email)
+      if (registered === true) {
+        // 確定已存在才導向
+        navigate('/signin', {
+          state: { from, prefillEmail: email.trim().toLowerCase() },
+          replace: true,
+        })
+        return
+      }
       await signInWithEmail(email)
       navigate('/verify-email', { state: { from }, replace: true })
     } catch {

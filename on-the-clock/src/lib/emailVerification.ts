@@ -175,3 +175,22 @@ export async function getEmailAuthPassword(email: string): Promise<string | null
 export async function saveEmailAuthPassword(email: string, password: string): Promise<void> {
   await setDoc(doc(db, 'emailAuth', emailDocId(normalizeEmail(email))), { password })
 }
+
+/**
+ * 呼叫時使用者尚未登入（unauthenticated）。
+ * Firestore emailAuth 需允許未登入讀取；
+ * 若遇 permission-denied，回傳 null 讓呼叫端 fall-through，不當作發碼失敗。
+ */
+export async function checkEmailRegistered(email: string): Promise<boolean | null> {
+  try {
+    const snapshot = await getDoc(doc(db, 'emailAuth', emailDocId(normalizeEmail(email))))
+    return snapshot.exists()
+  } catch (err) {
+    const firebaseErr = err as { code?: string }
+    if (firebaseErr.code === 'permission-denied') {
+      console.warn('[checkEmailRegistered] permission-denied, falling through')
+      return null
+    }
+    throw err
+  }
+}

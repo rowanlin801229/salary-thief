@@ -80,8 +80,13 @@ export function VerifyEmailPage() {
     setError(null)
     setSubmitting(true)
     try {
-      await verifyEmailCode(code)
-      navigate('/setup-profile', { state: { from }, replace: true })
+      const { isNewUser } = await verifyEmailCode(code)
+      if (isNewUser) {
+        navigate('/setup-profile', { state: { from }, replace: true })
+      } else {
+        // 舊用戶保留 from（例如從排行榜來），from 沒有才 fallback /result
+        navigate(from ?? '/result', { replace: true })
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : ''
       if (

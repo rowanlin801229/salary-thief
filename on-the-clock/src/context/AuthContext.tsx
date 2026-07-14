@@ -43,10 +43,11 @@ interface AuthContextValue {
   isEmailVerified: boolean
   profileComplete: boolean
   loading: boolean
+  profileLoading: boolean
   pendingEmail: string | null
   signInWithGoogle: () => Promise<void>
   signInWithEmail: (email: string) => Promise<string>
-  verifyEmailCode: (code: string) => Promise<void>
+  verifyEmailCode: (code: string) => Promise<{ isNewUser: boolean }>
   signOut: () => Promise<void>
   updateUserProfile: (displayName: string, photoURL?: string) => Promise<void>
   updateUserPhoto: (photoURL: string) => Promise<void>
@@ -60,6 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [profileLoading, setProfileLoading] = useState(false)
   const [pendingEmail, setPendingEmailState] = useState<string | null>(() => getPendingEmail())
 
   const loadProfile = useCallback(
@@ -75,14 +77,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (nextUser) => {
       setUser(nextUser)
       if (nextUser) {
+        setProfileLoading(true)
         try {
           const nextProfile = await getUserProfile(nextUser.uid)
           setProfile(nextProfile ?? (await loadProfile(nextUser)))
         } catch {
           setProfile(null)
         }
+        setProfileLoading(false)
       } else {
         setProfile(null)
+        setProfileLoading(false)
       }
       setLoading(false)
     })
@@ -124,6 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     console.log('[AuthContext] Step 2: checking if returning user...')
     const existingPassword = await getEmailAuthPassword(email)
+    const isNewUser = !existingPassword
     console.log('[AuthContext] existingPassword:', existingPassword ? 'EXISTS' : 'NEW USER')
 
     try {
@@ -214,7 +220,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.warn('[AuthContext] Step 4: no auth.currentUser after sign-in')
     }
 
-    console.log('[AuthContext] verifyEmailCode COMPLETE')
+    console.log('[AuthContext] verifyEmailCode COMPLETE, isNewUser:', isNewUser)
+    return { isNewUser }
   }, [loadProfile])
 
   const signOut = useCallback(async () => {
@@ -266,6 +273,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isEmailVerified: Boolean(user?.emailVerified || user?.providerData.some((p) => p.providerId === 'google.com')),
       profileComplete: isProfileComplete(profile),
       loading,
+      profileLoading,
       pendingEmail,
       signInWithGoogle,
       signInWithEmail,
@@ -279,6 +287,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       profile,
       loading,
+      profileLoading,
       pendingEmail,
       signInWithGoogle,
       signInWithEmail,
