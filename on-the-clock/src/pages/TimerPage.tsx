@@ -9,7 +9,14 @@ import { useAppState } from '../context/AppStateContext'
 import { useCurrency } from '../context/CurrencyContext'
 import { useLanguage } from '../context/LanguageContext'
 import { formatCurrency, getPerMinuteRate, isScheduleComplete } from '../lib/salary'
-import { loadTodaySessions, saveLastSession, saveTodaySessions } from '../lib/storage'
+import {
+  clearActiveTimer,
+  loadActiveTimer,
+  loadTodaySessions,
+  saveActiveTimer,
+  saveLastSession,
+  saveTodaySessions
+} from '../lib/storage'
 import { formatMinutesSeconds } from '../lib/time'
 
 function createSessionId(): string {
@@ -24,9 +31,20 @@ export function TimerPage() {
   const { symbol } = useCurrency()
   const { salaryConfig, timerStartAt, stopTimer, setLastSession } = useAppState()
   const [now, setNow] = useState(() => Date.now())
-  const [accumulatedMs, setAccumulatedMs] = useState(0)
-  const [activeSince, setActiveSince] = useState<number | null>(null)
-  const [sessionStartAt, setSessionStartAt] = useState<number | null>(null)
+  // Restore from localStorage so long sessions / tab sleep / navigation don't zero the clock.
+  // If AppState has a fresh auto-start (from Setup / Result), ignore the old snapshot.
+  const [accumulatedMs, setAccumulatedMs] = useState(() => {
+    if (timerStartAt !== null) return 0
+    return loadActiveTimer()?.accumulatedMs ?? 0
+  })
+  const [activeSince, setActiveSince] = useState<number | null>(() => {
+    if (timerStartAt !== null) return timerStartAt
+    return loadActiveTimer()?.activeSince ?? null
+  })
+  const [sessionStartAt, setSessionStartAt] = useState<number | null>(() => {
+    if (timerStartAt !== null) return timerStartAt
+    return loadActiveTimer()?.sessionStartAt ?? null
+  })
   const navigate = useNavigate()
 
   const canStart = salaryConfig.amount > 0 && isScheduleComplete(salaryConfig)
@@ -38,14 +56,48 @@ export function TimerPage() {
     setSessionStartAt(timerStartAt)
     setActiveSince(timerStartAt)
     setAccumulatedMs(0)
+    saveActiveTimer({
+      sessionStartAt: timerStartAt,
+      accumulatedMs: 0,
+      activeSince: timerStartAt
+    })
     stopTimer()
   }, [timerStartAt, stopTimer])
+
+  // Keep snapshot in sync (pause / resume / tick segment changes)
+  useEffect(() => {
+    if (sessionStartAt === null && accumulatedMs <= 0 && activeSince === null) {
+      clearActiveTimer()
+      return
+    }
+    if (sessionStartAt === null) return
+    saveActiveTimer({
+      sessionStartAt,
+      accumulatedMs,
+      activeSince
+    })
+  }, [sessionStartAt, accumulatedMs, activeSince])
 
   useEffect(() => {
     if (!isRunning) return
     const timerId = window.setInterval(() => setNow(Date.now()), 100)
     return () => window.clearInterval(timerId)
   }, [isRunning])
+
+  // After long background sleep, interval may stall — catch up as soon as tab is visible
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') {
+        setNow(Date.now())
+      }
+    }
+    document.addEventListener('visibilitychange', onVisible)
+    window.addEventListener('focus', onVisible)
+    return () => {
+      document.removeEventListener('visibilitychange', onVisible)
+      window.removeEventListener('focus', onVisible)
+    }
+  }, [])
 
   const elapsedMs = useMemo(() => {
     if (!activeSince) return accumulatedMs
@@ -95,6 +147,10 @@ export function TimerPage() {
     saveTodaySessions([session, ...existing])
     saveLastSession(session)
     setLastSession(session)
+    clearActiveTimer()
+    setAccumulatedMs(0)
+    setActiveSince(null)
+    setSessionStartAt(null)
     stopTimer()
     navigate('/result')
   }

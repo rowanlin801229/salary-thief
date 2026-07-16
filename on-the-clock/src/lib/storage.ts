@@ -4,10 +4,19 @@ import type { Currency, SalaryConfig, SessionRecord } from '../types'
 const HISTORY_KEY = 'on-the-clock/history'
 const HISTORY_DATE_KEY = 'on-the-clock/history-date'
 const LAST_SESSION_KEY = 'on-the-clock/last-session'
+const ACTIVE_TIMER_KEY = 'on-the-clock/active-timer'
 const SALARY_CONFIG_KEY = 'on-the-clock/salary-config'
 const MONTHLY_HISTORY_PREFIX = 'on-the-clock/monthly-history-'
 
 export { SALARY_CONFIG_KEY, MONTHLY_HISTORY_PREFIX }
+
+/** Running / paused timer snapshot — survives reload & tab sleep */
+export interface ActiveTimerState {
+  sessionStartAt: number
+  accumulatedMs: number
+  /** null = paused; timestamp when current run segment started */
+  activeSince: number | null
+}
 
 export function yearMonthFromDate(date: Date = new Date()): string {
   const year = date.getFullYear()
@@ -108,6 +117,40 @@ export function loadLastSession(): SessionRecord | null {
 
 export function clearLastSession(): void {
   sessionStorage.removeItem(LAST_SESSION_KEY)
+}
+
+export function saveActiveTimer(state: ActiveTimerState): void {
+  try {
+    localStorage.setItem(ACTIVE_TIMER_KEY, JSON.stringify(state))
+  } catch {
+    // quota / private mode — timer still works in memory
+  }
+}
+
+export function loadActiveTimer(): ActiveTimerState | null {
+  const raw = localStorage.getItem(ACTIVE_TIMER_KEY)
+  if (!raw) return null
+
+  try {
+    const parsed = JSON.parse(raw) as ActiveTimerState
+    if (
+      typeof parsed.sessionStartAt !== 'number' ||
+      typeof parsed.accumulatedMs !== 'number' ||
+      !(typeof parsed.activeSince === 'number' || parsed.activeSince === null)
+    ) {
+      return null
+    }
+    // Discard absurd / corrupted snapshots (e.g. future start, negative time)
+    if (parsed.sessionStartAt <= 0 || parsed.accumulatedMs < 0) return null
+    if (parsed.activeSince !== null && parsed.activeSince <= 0) return null
+    return parsed
+  } catch {
+    return null
+  }
+}
+
+export function clearActiveTimer(): void {
+  localStorage.removeItem(ACTIVE_TIMER_KEY)
 }
 
 export function clearTodaySessions(): void {
