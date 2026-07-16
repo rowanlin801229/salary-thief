@@ -370,7 +370,7 @@ export const translations: Record<Language, Record<LabelKey, string>> = {
     setupStepsTitle: '摸魚攻略',
     timerCatQuote: '偷時間中…噓',
     timerMoneyBurst: '入袋啦！',
-    resultCatQuote: '今天贏麻了',
+    resultCatQuote: '今天賺爛了',
     resultBurst: '讚啦！！',
     historyTitle: '我的紀錄',
     historyCatQuote: '又在對帳…累',
