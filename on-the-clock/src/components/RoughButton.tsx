@@ -16,9 +16,11 @@ export function RoughButton({
   frameClassName,
   ...buttonProps
 }: RoughButtonProps) {
+  const isDisabled = Boolean(buttonProps.disabled)
+
   return (
     <RoughFrame
-      className={`rough-control rough-button-frame ${active ? 'is-active' : ''} ${primary ? 'is-primary' : ''} ${frameClassName ?? ''}`}
+      className={`rough-control rough-button-frame ${active ? 'is-active' : ''} ${primary ? 'is-primary' : ''} ${isDisabled ? 'is-disabled' : ''} ${frameClassName ?? ''}`}
       contentClassName="rough-control-content"
       fill="transparent"
       stroke="#000000"

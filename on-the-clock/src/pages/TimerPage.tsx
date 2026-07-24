@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { DoodleMarks } from '../components/DoodleMarks'
 import { RoughBox } from '../components/RoughBox'
@@ -6,6 +6,7 @@ import { RoughButton } from '../components/RoughButton'
 import { StopwatchDial } from '../components/StopwatchDial'
 import { TimerToggleIcon } from '../components/TimerToggleIcon'
 import { useAppState } from '../context/AppStateContext'
+import { useBossKey } from '../context/BossKeyContext'
 import { useCurrency } from '../context/CurrencyContext'
 import { useLanguage } from '../context/LanguageContext'
 import { formatCurrency, getPerMinuteRate, isScheduleComplete } from '../lib/salary'
@@ -30,6 +31,7 @@ export function TimerPage() {
   const { t, language } = useLanguage()
   const { symbol } = useCurrency()
   const { salaryConfig, timerStartAt, stopTimer, setLastSession } = useAppState()
+  const { isActive: bossKeyActive } = useBossKey()
   const [now, setNow] = useState(() => Date.now())
   // Restore from localStorage so long sessions / tab sleep / navigation don't zero the clock.
   // If AppState has a fresh auto-start (from Setup / Result), ignore the old snapshot.
@@ -46,6 +48,9 @@ export function TimerPage() {
     return loadActiveTimer()?.sessionStartAt ?? null
   })
   const navigate = useNavigate()
+  const activeSinceRef = useRef(activeSince)
+  const wasRunningBeforeBossRef = useRef(false)
+  activeSinceRef.current = activeSince
 
   const canStart = salaryConfig.amount > 0 && isScheduleComplete(salaryConfig)
   const isRunning = activeSince !== null
@@ -78,26 +83,60 @@ export function TimerPage() {
     })
   }, [sessionStartAt, accumulatedMs, activeSince])
 
+  // 500ms tick while visible; clear interval when tab/app is hidden (wall-clock still accurate)
   useEffect(() => {
     if (!isRunning) return
-    const timerId = window.setInterval(() => setNow(Date.now()), 100)
-    return () => window.clearInterval(timerId)
-  }, [isRunning])
 
-  // After long background sleep, interval may stall — catch up as soon as tab is visible
-  useEffect(() => {
-    const onVisible = () => {
-      if (document.visibilityState === 'visible') {
+    let timerId = 0
+
+    const start = () => {
+      timerId = window.setInterval(() => setNow(Date.now()), 500)
+    }
+    const stop = () => {
+      if (timerId) window.clearInterval(timerId)
+      timerId = 0
+    }
+
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') {
+        stop()
+      } else {
         setNow(Date.now())
+        stop()
+        start()
       }
     }
-    document.addEventListener('visibilitychange', onVisible)
-    window.addEventListener('focus', onVisible)
-    return () => {
-      document.removeEventListener('visibilitychange', onVisible)
-      window.removeEventListener('focus', onVisible)
+
+    document.addEventListener('visibilitychange', onVisibility)
+    if (document.visibilityState === 'visible') {
+      start()
     }
-  }, [])
+
+    return () => {
+      stop()
+      document.removeEventListener('visibilitychange', onVisibility)
+    }
+  }, [isRunning])
+
+  // Boss key: pause while overlay is up; resume only if timer was running at activation
+  useEffect(() => {
+    if (bossKeyActive) {
+      const since = activeSinceRef.current
+      if (since !== null) {
+        wasRunningBeforeBossRef.current = true
+        setAccumulatedMs((acc) => acc + Math.max(0, Date.now() - since))
+        setActiveSince(null)
+      } else {
+        wasRunningBeforeBossRef.current = false
+      }
+      return
+    }
+
+    if (wasRunningBeforeBossRef.current) {
+      wasRunningBeforeBossRef.current = false
+      setActiveSince(Date.now())
+    }
+  }, [bossKeyActive])
 
   const elapsedMs = useMemo(() => {
     if (!activeSince) return accumulatedMs

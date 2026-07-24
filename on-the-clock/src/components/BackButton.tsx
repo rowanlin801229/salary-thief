@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAppState } from '../context/AppStateContext'
 import { useLanguage } from '../context/LanguageContext'
+import { clearActiveTimer } from '../lib/storage'
 
 function BackIcon() {
   return (
@@ -28,6 +29,7 @@ export function BackButton() {
   const handleBack = () => {
     if (location.pathname === '/timer') {
       clearTimer()
+      clearActiveTimer()
       navigate('/setup')
     } else if (location.pathname === '/result') {
       navigate('/timer')

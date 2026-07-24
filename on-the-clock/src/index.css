@@ -255,11 +255,13 @@ button {
 }
 
 .lang-toggle .rough-button-frame.is-active {
-  background: var(--fg);
+  background: var(--bg);
+  border-width: 3px;
 }
 
 .lang-toggle .rough-button-frame.is-active .rough-button-native {
-  color: var(--bg);
+  color: var(--fg);
+  font-weight: 700;
 }
 
 .lang-toggle .rough-button-frame:last-child {
@@ -636,11 +638,6 @@ button {
   transform: rotate(-8deg);
 }
 
-.doodle-mark-arrow {
-  top: 42%;
-  right: 6px;
-  transform: rotate(90deg);
-}
 
 .result-big-title {
   margin: 6px 0 0;
@@ -783,11 +780,13 @@ button {
 }
 
 .mode-row .rough-button-frame.is-active {
-  background: var(--fg);
+  background: var(--bg);
+  border-width: 3px;
 }
 
 .mode-row .rough-button-frame.is-active .rough-button-native {
-  color: var(--bg);
+  color: var(--fg);
+  font-weight: 700;
 }
 
 .setup-salary-warning {
@@ -838,7 +837,6 @@ button {
   font-family: 'Caveat', cursive;
   font-size: var(--type-button);
   font-weight: 700;
-  color: var(--fg);
 }
 
 .start-button-frame {
@@ -856,9 +854,11 @@ button {
   opacity: 1;
 }
 
+.rough-button-frame.is-disabled,
 .rough-button-frame:has(.rough-button-native:disabled) {
   background: var(--surface-card);
   border-color: var(--border);
+  opacity: 0.4;
 }
 
 .timer-label {
@@ -920,12 +920,38 @@ button {
   transition: border-width 0.2s ease;
 }
 
-.rough-button-frame:active:not(.is-active) {
+.rough-button-frame:active:not(.is-active):not(.is-disabled) {
   background: var(--fg);
   border-width: 3px;
 }
 
-.rough-button-frame:active:not(.is-active) .rough-button-native {
+.rough-button-frame:active:not(.is-active):not(.is-disabled) .rough-button-native {
+  color: var(--bg);
+}
+
+/* Primary CTA — solid black, more prominent than segmented chips */
+.rough-button-frame.is-primary:not(.is-disabled) {
+  background: var(--fg);
+  border-color: var(--fg);
+}
+
+.rough-button-frame.is-primary:not(.is-disabled) .rough-button-native {
+  color: var(--bg);
+}
+
+.rough-button-frame.is-primary.is-disabled .rough-button-native,
+.rough-button-frame.is-primary:has(.rough-button-native:disabled) .rough-button-native {
+  color: var(--text-secondary);
+}
+
+.rough-button-frame.is-primary:active:not(.is-disabled),
+.rough-button-frame.is-primary.is-active:not(.is-disabled) {
+  background: var(--fg);
+  border-color: var(--fg);
+}
+
+.rough-button-frame.is-primary:active:not(.is-disabled) .rough-button-native,
+.rough-button-frame.is-primary.is-active:not(.is-disabled) .rough-button-native {
   color: var(--bg);
 }
 
@@ -978,7 +1004,7 @@ button {
   color: var(--fg);
 }
 
-.rough-button-frame:not(.is-active) .rough-button-native:not(:disabled) {
+.rough-button-frame:not(.is-active):not(.is-primary) .rough-button-native:not(:disabled) {
   color: var(--fg);
 }
 
@@ -992,11 +1018,11 @@ button {
   font-weight: 400;
 }
 
-.rough-button-frame.is-active {
+.rough-button-frame.is-active:not(.is-primary) {
   background: var(--fg);
 }
 
-.rough-button-frame.is-active .rough-button-native {
+.rough-button-frame.is-active:not(.is-primary) .rough-button-native {
   color: var(--bg);
 }
 
@@ -3057,9 +3083,14 @@ button {
 }
 
 /* Button hover — v4.0 */
-.rough-button-frame:hover:not(:active):not(.is-active) {
+.rough-button-frame:hover:not(:active):not(.is-active):not(.is-primary):not(.is-disabled) {
   border-width: 3px;
   background: var(--bg);
+}
+
+.rough-button-frame.is-primary:hover:not(:active):not(.is-disabled) {
+  border-width: 3px;
+  background: var(--fg);
 }
 
 .lang-toggle .rough-button-frame:not(.is-active):hover,

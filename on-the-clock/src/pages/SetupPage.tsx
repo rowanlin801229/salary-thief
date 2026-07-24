@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CurrencySelectorButton } from '../components/CurrencySelectorButton'
 import { DoodleMarks } from '../components/DoodleMarks'
@@ -18,6 +18,8 @@ export function SetupPage() {
   const navigate = useNavigate()
   const rate = useMemo(() => getPerMinuteRate(salaryConfig), [salaryConfig])
   const canStart = salaryConfig.amount > 0 && isScheduleComplete(salaryConfig)
+  const [showStartHint, setShowStartHint] = useState(false)
+  const startWrapRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (salaryConfig.currency !== currency) {
@@ -26,6 +28,20 @@ export function SetupPage() {
     // Keep salary config currency aligned with persisted currency on first load.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect(() => {
+    if (canStart) setShowStartHint(false)
+  }, [canStart])
+
+  useEffect(() => {
+    if (!showStartHint) return
+    const onPointerDown = (event: PointerEvent) => {
+      if (startWrapRef.current?.contains(event.target as Node)) return
+      setShowStartHint(false)
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    return () => document.removeEventListener('pointerdown', onPointerDown)
+  }, [showStartHint])
 
   const handleCurrencyChange = (next: Currency) => {
     setCurrency(next)
@@ -44,6 +60,10 @@ export function SetupPage() {
     if (!canStart) return
     startTimer()
     navigate('/timer')
+  }
+
+  const handleDisabledStartClick = () => {
+    if (!canStart) setShowStartHint(true)
   }
 
   return (
@@ -224,7 +244,11 @@ export function SetupPage() {
         </section>
 
         <section className="setup-group setup-group-action">
-          <div className="start-button-wrap">
+          <div
+            ref={startWrapRef}
+            className="start-button-wrap"
+            onClick={handleDisabledStartClick}
+          >
             {canStart && <span className="start-burst" aria-hidden>{t('setupStartBurst')}</span>}
             <RoughButton
               type="button"
@@ -237,7 +261,7 @@ export function SetupPage() {
               {t('startTimer')}
             </RoughButton>
           </div>
-          {startHint && (
+          {showStartHint && startHint && (
             <p className="setup-start-hint">{startHint}</p>
           )}
         </section>

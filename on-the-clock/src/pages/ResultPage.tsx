@@ -215,6 +215,31 @@ export function ResultPage() {
           <span className="page-cat-bubble page-cat-bubble-result">{t('resultCatQuote')}</span>
         </div>
 
+        <section className="result-group result-group-action">
+          <div className="result-actions-row">
+            <RoughButton
+              type="button"
+              primary
+              className="result-continue-button"
+              frameClassName="result-continue-button-frame"
+              onClick={() => {
+                startTimer()
+                navigate('/timer')
+              }}
+            >
+              {t('continueSlacking')}
+            </RoughButton>
+            <RoughButton
+              type="button"
+              className="result-share-button"
+              frameClassName="result-share-button-frame"
+              onClick={handleShare}
+            >
+              {copied ? t('copied') : t('share')}
+            </RoughButton>
+          </div>
+        </section>
+
         <div className="result-tab-bar">
           <button
             type="button"
@@ -249,31 +274,6 @@ export function ResultPage() {
                 <p className="result-stat-value result-stat-time">
                   {formatMinutesSeconds(session.elapsedMs)}
                 </p>
-              </div>
-            </section>
-
-            <section className="result-group result-group-action">
-              <div className="result-actions-row">
-                <RoughButton
-                  type="button"
-                  primary
-                  className="result-continue-button"
-                  frameClassName="result-continue-button-frame"
-                  onClick={() => {
-                    startTimer()
-                    navigate('/timer')
-                  }}
-                >
-                  {t('continueSlacking')}
-                </RoughButton>
-                <RoughButton
-                  type="button"
-                  className="result-share-button"
-                  frameClassName="result-share-button-frame"
-                  onClick={handleShare}
-                >
-                  {copied ? t('copied') : t('share')}
-                </RoughButton>
               </div>
             </section>
 
